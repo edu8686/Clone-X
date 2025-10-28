@@ -1,7 +1,9 @@
 const prisma = require("../prisma");
+const bcrypt = require("bcrypt")
 
 async function signUp(req, res) {
   const { name, username, email, password } = req.body;
+  const hashedPassword = await bcrypt.hash(password, 10);
   if (!username || !email) {
     return res.status(400).json({ message: "Fields missing" });
   }
@@ -21,7 +23,7 @@ async function signUp(req, res) {
         name,
         username,
         email,
-        password,
+        password : hashedPassword,
       },
     });
     if (newUser) {

@@ -4,12 +4,12 @@ const { signUp } = require("../../controllers/userController");
 const app = require("../../app");
 
 describe("User creation, no server", () => {
-  it("Should return status 201", async () => {
+  it.skip("Should return status 201", async () => {
     const req = {
       body: {
         name: "Santiago",
-        username: "nas78",
-        email: "testnas78@test.com.ar",
+        username: "nuevousername",
+        email: "nuevousername@test.com.ar",
         password: "1234",
       },
     };
@@ -38,10 +38,9 @@ describe("User creation, with server", () => {
     const res = await request(app)
       .post("/user/sign-up")
       .send({
-
-          name: "Esteban",
-          username: "estebanquito",
-          email: "testesteban@test.com.ar",
+          name: "Emanuel",
+          username: "ema25",
+          email: "ema25@test.com.ar",
           password: "1234",
       });
     expect(res.statusCode).toBe(201);

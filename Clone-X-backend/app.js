@@ -3,7 +3,8 @@ const express = require("express");
 
 // 1.1 Otros imports 
 
-const userRouter = require("./routes/userRoutes")
+const userRouter = require("./routes/userRoutes");
+const authRouter = require("./routes/authRoutes");
 
 // 2. Crear servidor
 const app = express();
@@ -41,7 +42,8 @@ app.get("/", (req, res) => {
     res.status(200).json({ message: "Server running correctly"})
 })
 
-app.use("/user", userRouter)
+app.use("/user", userRouter);
+app.use("/auth", authRouter);
 
 
 
