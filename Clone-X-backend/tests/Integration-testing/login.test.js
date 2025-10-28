@@ -1,5 +1,4 @@
 
-
 const app = require("../../app");
 const authRoutes = require("../../routes/authRoutes");
 const request = require("supertest");
