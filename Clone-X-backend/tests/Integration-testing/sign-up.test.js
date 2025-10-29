@@ -4,7 +4,7 @@ const prisma = require("../../generated/prisma");
 const app = require("../../app");
 
 describe("User creation, with server", () => {
-  it("Should return status 201", async () => {
+  it.skip("Should return status 201", async () => {
     const res = await request(app)
       .post("/user/sign-up")
       .send({

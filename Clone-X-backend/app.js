@@ -5,6 +5,7 @@ const express = require("express");
 
 const userRouter = require("./routes/userRoutes");
 const authRouter = require("./routes/authRoutes");
+const postRouter = require("./routes/postRoutes");
 
 // 2. Crear servidor
 const app = express();
@@ -44,6 +45,7 @@ app.get("/", (req, res) => {
 
 app.use("/user", userRouter);
 app.use("/auth", authRouter);
+app.use("/post", postRouter);
 
 
 
