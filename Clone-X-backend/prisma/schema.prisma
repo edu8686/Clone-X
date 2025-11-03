@@ -38,6 +38,8 @@ model User {
   // Métricas
   likes        Int        @default(0)
   reposts      Int        @default(0)
+
+  likedPosts Post[] @relation("UserLikesPost")
 }
 
 model Profile {
@@ -62,6 +64,7 @@ model Post {
   text       String
   createdAt  DateTime   @default(now())
   likes      Int        @default(0)
+  likedBy    User[]     @relation("UserLikesPost")
   saved      Int        @default(0)
 
   // Relaciones

@@ -114,7 +114,9 @@ async function findPostsSearch(req, res) {
     const results = await prisma.post.findMany({
       where: {
         OR: [
-          { author: { username: { contains: searchTerm, mode: "insensitive" } } },
+          {
+            author: { username: { contains: searchTerm, mode: "insensitive" } },
+          },
           { text: { contains: searchTerm, mode: "insensitive" } },
         ],
       },
@@ -130,10 +132,33 @@ async function findPostsSearch(req, res) {
   }
 }
 
+async function updatePostLikes(req, res) {
+  const { userId, postId } = req.body;
+
+  try {
+    await prisma.post.update({
+      where: {
+        id: Number(postId),
+      },
+      data: {
+        likes: { incremente: 1 },
+        likedBy: {
+          connect: { id: userId },
+        },
+      },
+    });
+  } catch (err) {}
+}
+
+async function updatePostSaved(req, res) {
+  
+}
+
 module.exports = {
   createPost,
   deletePost,
   findPostsByUserId,
   findPostById,
   findPostsSearch,
+  updatePostLikes
 };

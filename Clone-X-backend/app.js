@@ -8,6 +8,7 @@ const userRouter = require("./routes/userRoutes");
 const authRouter = require("./routes/authRoutes");
 const postRouter = require("./routes/postRoutes");
 const commentRouter = require("./routes/commentRoutes")
+const profileRouter = require("./routes/profileRoutes")
 
 // 2. Crear servidor
 const app = express();
@@ -29,6 +30,7 @@ app.use(cors({
 // 5. Import dotenv para manejar los entornos de desarrollo y producción
 
 const dotenv = require("dotenv");
+const { profile } = require("./prisma");
 
 // 6. Cargar .env o .env.production automaticamente 
 dotenv.config({
@@ -49,7 +51,7 @@ app.use("/user", userRouter);
 app.use("/auth", authRouter);
 app.use("/post", postRouter);
 app.use("/post/comment", commentRouter)
-
+app.use("profile", profileRouter)
 
 
  module.exports = app;
