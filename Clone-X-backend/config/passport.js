@@ -15,7 +15,7 @@ const opts = {};
 opts.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
 
 // 1.3 Le indica a Passport la clave secreta que se usó para firmar los jwt
-opts.secretOrKey = env.process.JWT_SECRET;
+opts.secretOrKey = process.env.JWT_SECRET;
 
 // 2. Crear el jwt asociado a un id
 function createJWT(id) {
@@ -68,6 +68,7 @@ passport.use( new JwtStrategy(opts, async function(jwt_payload, done){
     }
 }))
 
+module.exports = passport;
 module.exports = {
   createJWT
 };

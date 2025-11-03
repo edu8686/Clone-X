@@ -3,9 +3,11 @@ const express = require("express");
 
 // 1.1 Otros imports 
 
+const { passport } = require("./config/passport");
 const userRouter = require("./routes/userRoutes");
 const authRouter = require("./routes/authRoutes");
 const postRouter = require("./routes/postRoutes");
+const commentRouter = require("./routes/commentRoutes")
 
 // 2. Crear servidor
 const app = express();
@@ -46,6 +48,7 @@ app.get("/", (req, res) => {
 app.use("/user", userRouter);
 app.use("/auth", authRouter);
 app.use("/post", postRouter);
+app.use("/post/comment", commentRouter)
 
 
 
