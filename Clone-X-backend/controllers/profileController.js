@@ -1,7 +1,8 @@
-import prisma from "../prisma";
+
+const prisma = require("../prisma")
 
 
-export async function updateProfile(req, res) {
+async function updateProfile(req, res) {
   const { userId } = req.params;
   const {
     name,
@@ -43,4 +44,9 @@ export async function updateProfile(req, res) {
     console.error("Error updating profile:", error);
     return res.status(500).json({ message: "Internal server error" });
   }
+}
+
+
+module.exports = {
+  updateProfile
 }

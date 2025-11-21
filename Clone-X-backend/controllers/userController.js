@@ -1,57 +1,76 @@
 const prisma = require("../prisma");
 const bcrypt = require("bcrypt");
 
-import bcrypt from "bcrypt";
-import prisma from "../prisma/client.js"; // o el path que uses
-
-export async function signUp(req, res) {
+async function signUp(req, res) {
   const { name, username, email, password } = req.body;
+  const hashedPassword = await bcrypt.hash(password, 10);
+  if (!username || !email) {
+    return res.status(400).json({ message: "Fields missing" });
+  }
 
-  // Validaciones básicas
-  if (!username || !email || !password || !name) {
-    return res.status(400).json({ message: "Missing required fields" });
+  const existingUser = await prisma.user.findUnique({
+    where: {
+      username,
+    },
+  });
+  if (existingUser) {
+    return res.status(409).json({ message: "User already exists" });
   }
 
   try {
-    // Verificar si el usuario ya existe (por username o email)
-    const existingUser = await prisma.user.findFirst({
-      where: {
-        OR: [{ username }, { email }],
-      },
-    });
-
-    if (existingUser) {
-      return res.status(409).json({ message: "User already exists" });
-    }
-
-    // Encriptar contraseña
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    // Crear usuario y su perfil asociado en una sola operación
     const newUser = await prisma.user.create({
       data: {
         name,
         username,
         email,
         password: hashedPassword,
-        profile: {
-          create: {
-            name, // opcional: podés guardar el mismo nombre en el perfil
-          },
-        },
       },
-      include: {
-        profile: true, // devuelve también el perfil en la respuesta
+    });
+    if (newUser) {
+      return res
+        .status(201)
+        .json({ message: "User created", "New user": newUser });
+    }
+  } catch (error) {
+    console.log("Error interno del servidor");
+    return res.status(500).json({ error: "Error interno del servidor" });
+  }
+}
+
+async function findUsersNotfollowings(req, res) {
+  const userId = parseInt(req.params.userId, 10);
+  if (isNaN(userId)) {
+    return res.status(400).json({ message: "Invalid user ID" });
+  }
+
+  try {
+    const users = await prisma.user.findMany({
+      where: {
+        id: { not: userId },
+      },
+      select: {
+        id: true,
+        name: true,
+        username: true,
+        profile: {
+          select: { biography: true },
+        },
+        followers: {
+          where: { followerId: userId },
+          select: { followerId: true },
+        },
       },
     });
 
-    return res.status(201).json({
-      message: "User and profile created successfully",
-      user: newUser,
-    });
+    const usersWithFollowFlag = users.map((u) => ({
+      ...u,
+      isFollowed: u.followers.length > 0,
+    }));
+
+    res.status(200).json({ message: "Users found", users: usersWithFollowFlag });
   } catch (error) {
-    console.error("Internal server error:", error);
-    return res.status(500).json({ error: "Internal server error" });
+    console.error("Error fetching users:", error);
+    res.status(500).json({ message: "Error fetching users", error });
   }
 }
 
@@ -85,7 +104,9 @@ async function startFollow(req, res) {
     });
   } catch (err) {
     console.error(err);
-    return res.status(500).json({ message: "Internal server error with userToFollow" });
+    return res
+      .status(500)
+      .json({ message: "Internal server error with userToFollow" });
   }
 
   if (!user || !userToFollow) {
@@ -111,6 +132,46 @@ async function startFollow(req, res) {
     }
     console.error("Error creating follow:", err);
     return res.status(500).json({ message: "Internal server error" });
+  }
+}
+
+async function deleteFollow(req, res) {
+  const { userId, otherUserId } = req.params;
+  console.log(typeof userId)
+  console.log(typeof otherUserId)
+
+
+  if (isNaN(userId) || isNaN(otherUserId)) {
+    return res.status(400).json({ error: "Invalid userId or otherUserId" });
+  }
+
+  try {
+    const follow = await prisma.follow.findUnique({
+      where: {
+        followerId_followedId: {
+          followerId: Number(userId),
+          followedId: Number(otherUserId),
+        },
+      },
+    });
+
+    if (!follow) {
+      return res.status(404).json({ message: "Follow relation not found" });
+    }
+
+    await prisma.follow.delete({
+      where: {
+        followerId_followedId: {
+          followerId: Number(userId),
+          followedId: Number(otherUserId),
+        },
+      },
+    });
+
+    res.json({ message: "Follow relation deleted successfully" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Error deleting follow relation" });
   }
 }
 
@@ -190,9 +251,41 @@ async function getFollowings(req, res) {
   }
 }
 
+// 🔹 Función auxiliar (sin req/res)
+// Función auxiliar
+async function getFollowingsByUserId(userId) {
+  const userFollowings = await prisma.user.findUnique({
+    where: { id: Number(userId) },
+    include: {
+      following: {
+        include: {
+          followed: {
+            select: {
+              id: true,
+              username: true,
+              profile: {
+                select: { biography: true },
+              },
+            },
+          },
+        },
+      },
+    },
+  });
+
+  if (!userFollowings) return [];
+
+  // De cada Follow, saco el usuario seguido
+  const followingsList = userFollowings.following.map((f) => f.followed);
+
+  return followingsList;
+}
+
 module.exports = {
   signUp,
   startFollow,
   getFollowers,
   getFollowings,
+  findUsersNotfollowings,
+  deleteFollow,
 };

@@ -1,7 +1,7 @@
 const { Router } = require("express")
 const commentRouter = Router();
 const commentController = require("../controllers/commentController");
-const passport = require("../config/passport")
+const passport = require("passport")
 
 commentRouter.post("/new", passport.authenticate("jwt", { session : false}), commentController.createComment);
 commentRouter.delete("/:commentId", passport.authenticate("jwt", {session : false}), commentController.deleteComment);

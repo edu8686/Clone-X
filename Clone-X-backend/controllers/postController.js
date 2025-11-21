@@ -41,6 +41,49 @@ async function deletePost(req, res) {
   }
 }
 
+async function findPostsFromFollowed(req, res) {
+  const { userId } = req.params;
+
+  const follows = await prisma.follow.findMany({
+    where: {
+      followerId: Number(userId),
+    },
+    select: {
+      followedId: true,
+    },
+  });
+
+  const followedIds = follows.map((f) => f.followedId);
+
+  try {
+    const posts = await prisma.post.findMany({
+      where: {
+        userId: { in: followedIds },
+      },
+      include: {
+        author: {
+          select: {
+            id: true,
+            name: true,
+            username: true,
+            profile: {
+              select: { profilePhoto: true },
+            },
+          },
+        },
+      },
+      orderBy: {
+        createdAt: "desc", // ordena del más nuevo al más viejo
+      },
+    });
+
+    res.json(posts);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Error al obtener posts" });
+  }
+}
+
 async function findPostsByUserId(req, res) {
   const { userId } = req.params;
 
@@ -132,6 +175,8 @@ async function findPostsSearch(req, res) {
   }
 }
 
+async function randomSearch(req, res) {}
+
 async function updatePostLikes(req, res) {
   const { userId, postId } = req.body;
 
@@ -150,9 +195,7 @@ async function updatePostLikes(req, res) {
   } catch (err) {}
 }
 
-async function updatePostSaved(req, res) {
-  
-}
+async function updatePostSaved(req, res) {}
 
 module.exports = {
   createPost,
@@ -160,5 +203,6 @@ module.exports = {
   findPostsByUserId,
   findPostById,
   findPostsSearch,
-  updatePostLikes
+  updatePostLikes,
+  findPostsFromFollowed
 };

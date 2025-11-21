@@ -1,12 +1,13 @@
 const prisma = require("../../generated/prisma");
+const { signUp } = require("../../controllers/userController")
 
 describe("User creation, no server", () => {
-  it.skip("Should return status 201", async () => {
+  it("Should return status 201", async () => {
     const req = {
       body: {
         name: "Santiago",
-        username: "nuevousername",
-        email: "nuevousername@test.com.ar",
+        username: "santi.calle",
+        email: "santi.calle@test.com.ar",
         password: "1234",
       },
     };

@@ -14,110 +14,109 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
 model User {
-  id           Int        @id @default(autoincrement())
-  name         String
-  username     String     @unique
-  email        String     @unique
-  password     String
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @updatedAt
+  id        Int      @id @default(autoincrement())
+  name      String
+  username  String   @unique
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   // Relaciones
-  profile      Profile?
-  posts        Post[]
-  comments     Comment[]
-  savedPosts   SavedPost[]
-  lists        List[]
-  following    Follow[]   @relation("Following")
-  followers    Follow[]   @relation("Followers")
-  chats        UserChat[]
-  messages     Message[]  @relation("UserMessages")
+  profile    Profile?
+  posts      Post[]
+  comments   Comment[]
+  savedPosts SavedPost[]
+  lists      List[]
+  following  Follow[]    @relation("Following") // yo sigo a otros (salgo como follower)
+  followers  Follow[]    @relation("Followers") // otros me siguen a mí (salgo como followed)
+  chats      UserChat[]
+  messages   Message[]   @relation("UserMessages")
 
   // Métricas
-  likes        Int        @default(0)
-  reposts      Int        @default(0)
+  likes   Int @default(0)
+  reposts Int @default(0)
 
   likedPosts Post[] @relation("UserLikesPost")
 }
 
 model Profile {
-  id         Int      @id @default(autoincrement())
-  name       String
-  lastName   String?
-  birth      DateTime?
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
-  banner     String?
+  id           Int       @id @default(autoincrement())
+  name         String
+  lastName     String?
+  birth        DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  banner       String?
   profilePhoto String?
-  biography  String?
-  location   String?
+  biography    String?
+  location     String?
 
   // Relación 1:1 con User
-  user       User     @relation(fields: [userId], references: [id])
-  userId     Int      @unique
+  user   User @relation(fields: [userId], references: [id])
+  userId Int  @unique
 }
 
 model Post {
-  id         Int        @id @default(autoincrement())
-  text       String
-  createdAt  DateTime   @default(now())
-  likes      Int        @default(0)
-  likedBy    User[]     @relation("UserLikesPost")
-  saved      Int        @default(0)
+  id        Int      @id @default(autoincrement())
+  text      String
+  createdAt DateTime @default(now())
+  likes     Int      @default(0)
+  likedBy   User[]   @relation("UserLikesPost")
+  saved     Int      @default(0)
 
   // Relaciones
-  author     User       @relation(fields: [userId], references: [id])
-  userId     Int
-  comments   Comment[]
-  savedBy    SavedPost[]
-  images     Image[]    @relation("PostImages")
-  lists      ListPost[]
+  author   User        @relation(fields: [userId], references: [id])
+  userId   Int
+  comments Comment[]
+  savedBy  SavedPost[]
+  images   Image[]     @relation("PostImages")
+  lists    ListPost[]
 }
 
 model Comment {
-  id         Int       @id @default(autoincrement())
-  text       String
-  createdAt  DateTime  @default(now())
-  likes      Int       @default(0)
+  id        Int      @id @default(autoincrement())
+  text      String
+  createdAt DateTime @default(now())
+  likes     Int      @default(0)
 
   // Relaciones
-  author     User      @relation(fields: [userId], references: [id])
-  userId     Int
+  author User @relation(fields: [userId], references: [id])
+  userId Int
 
-  post       Post      @relation(fields: [postId], references: [id])
-  postId     Int
+  post   Post @relation(fields: [postId], references: [id])
+  postId Int
 }
 
 model List {
-  id          Int        @id @default(autoincrement())
+  id          Int     @id @default(autoincrement())
   name        String
   description String?
-  
-  // Relaciones
-  user        User       @relation(fields: [userId], references: [id])
-  userId      Int
 
-  posts       ListPost[]
+  // Relaciones
+  user   User @relation(fields: [userId], references: [id])
+  userId Int
+
+  posts ListPost[]
 }
 
 model ListPost {
-  listId  Int
-  postId  Int
+  listId Int
+  postId Int
 
-  list    List   @relation(fields: [listId], references: [id])
-  post    Post   @relation(fields: [postId], references: [id])
+  list List @relation(fields: [listId], references: [id])
+  post Post @relation(fields: [postId], references: [id])
 
   @@id([listId, postId])
 }
 
 model SavedPost {
-  userId  Int
-  postId  Int
+  userId Int
+  postId Int
 
-  user    User @relation(fields: [userId], references: [id])
-  post    Post @relation(fields: [postId], references: [id])
+  user User @relation(fields: [userId], references: [id])
+  post Post @relation(fields: [postId], references: [id])
 
   @@id([userId, postId])
 }
@@ -126,66 +125,66 @@ model Follow {
   followerId Int
   followedId Int
 
-  follower   User @relation("Followers", fields: [followerId], references: [id])
-  followed   User @relation("Following", fields: [followedId], references: [id])
+  follower User @relation("Following", fields: [followerId], references: [id])
+  followed User @relation("Followers", fields: [followedId], references: [id])
 
   @@id([followerId, followedId])
 }
 
 model Chat {
-  id          Int         @id @default(autoincrement())
+  id          Int      @id @default(autoincrement())
   name        String?
   description String?
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
-  isGroup     Boolean     @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  isGroup     Boolean  @default(false)
 
-  messages    Message[]
-  users       UserChat[]
+  messages Message[]
+  users    UserChat[]
 }
 
 model UserChat {
-  userId  Int
-  chatId  Int
+  userId Int
+  chatId Int
 
-  user    User @relation(fields: [userId], references: [id])
-  chat    Chat @relation(fields: [chatId], references: [id])
+  user User @relation(fields: [userId], references: [id])
+  chat Chat @relation(fields: [chatId], references: [id])
 
   @@id([userId, chatId])
 }
 
 model Message {
-  id          Int       @id @default(autoincrement())
-  text        String
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  type        String?
-  
-  // Relaciones
-  sender      User      @relation("UserMessages", fields: [senderId], references: [id])
-  senderId    Int
-  chat        Chat      @relation(fields: [chatId], references: [id])
-  chatId      Int
+  id        Int      @id @default(autoincrement())
+  text      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  type      String?
 
-  images      Image[]   @relation("MessageImages")
+  // Relaciones
+  sender   User @relation("UserMessages", fields: [senderId], references: [id])
+  senderId Int
+  chat     Chat @relation(fields: [chatId], references: [id])
+  chatId   Int
+
+  images Image[] @relation("MessageImages")
 }
 
 model Image {
-  id          Int       @id @default(autoincrement())
-  url         String
-  mimeType    String?
-  size        Int?
-  width       Int?
-  height      Int?
-  name        String?
+  id       Int     @id @default(autoincrement())
+  url      String
+  mimeType String?
+  size     Int?
+  width    Int?
+  height   Int?
+  name     String?
 
   // Relación polimórfica
-  entityType  String?
-  entityId    Int?
+  entityType String?
+  entityId   Int?
 
   // Opcional: relación directa con Message si se usa así
-  message     Message?  @relation("MessageImages", fields: [messageId], references: [id])
-  messageId   Int?
+  message   Message? @relation("MessageImages", fields: [messageId], references: [id])
+  messageId Int?
 
   Post Post[] @relation("PostImages")
 }

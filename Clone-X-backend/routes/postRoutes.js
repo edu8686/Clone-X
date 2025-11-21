@@ -1,7 +1,7 @@
 const { Router } = require("express");
 const postRouter = Router();
 const postController = require("../controllers/postController");
-const passport = require("../config/passport")
+const passport = require("passport")
 
 postRouter.post(
   "/new-post",
@@ -26,6 +26,12 @@ postRouter.get(
   passport.authenticate("jwt", { session: false }),
   postController.findPostById
 );
+
+postRouter.get(
+  "/:userId/followed", 
+  passport.authenticate("jwt", {session : false}),
+  postController.findPostsFromFollowed
+)
 
 postRouter.delete(
   "/:postId",
