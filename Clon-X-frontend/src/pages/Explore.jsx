@@ -2,7 +2,6 @@ import { useContext, useEffect } from "react";
 import { UserContext } from "../context/UserContext";
 import { getUsersToFollow } from "../services/userService";
 import UserCard from "../components/UserCard";
-import RightSection from "../components/RightSection";
 
 export default function Explore() {
   const { usersToFollow, handleUsersToFollow, loginUser } =
@@ -36,9 +35,6 @@ export default function Explore() {
             user={user}
           />
         ))}
-      </div>
-      <div>
-        <RightSection />
       </div>
     </div>
   );

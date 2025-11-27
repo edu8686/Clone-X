@@ -39,5 +39,13 @@ postRouter.delete(
   postController.deletePost
 );
 
+postRouter.put("/i",
+  postController.incrementPostLikes
+)
+
+postRouter.put("/d",
+  postController.decrementPostLikes
+)
+
 
 module.exports = postRouter;

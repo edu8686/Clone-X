@@ -21,4 +21,32 @@ export async function getPostsFromFollowed(userId) {
   }
 }
 
+export async function incrementLikes(postId, userId){
+  try {
+    await fetch(`${API_URL}/post/i`, {
+      method : "PUT",
+      headers : {
+        "content-type" : "application/json"
+      },
+      body : JSON.stringify({ postId, userId })
+    })
+  } catch(err){
+    console.log("Error: ", err)
+  }
+} 
+
+export async function decrementLikes(postId, userId){
+  try {
+    await fetch(`${API_URL}/post/d`, {
+      method : "PUT",
+      headers : {
+        "content-type" : "application/json"
+      },
+      body : JSON.stringify({ postId, userId })
+    })
+  } catch(err){
+    console.log("Error: ", err)
+  }
+}
+
 export async function getPostsByUserId() {}

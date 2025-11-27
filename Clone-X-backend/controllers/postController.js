@@ -71,9 +71,24 @@ async function findPostsFromFollowed(req, res) {
             },
           },
         },
+        comments: {
+          select: {
+            id: true,
+            text: true,
+            likes: true,
+            createdAt: true,
+            author: {
+              select: {
+                id: true,
+                name: true,
+                username: true,
+              },
+            },
+          },
+        },
       },
       orderBy: {
-        createdAt: "desc", // ordena del más nuevo al más viejo
+        createdAt: "desc",
       },
     });
 
@@ -177,8 +192,35 @@ async function findPostsSearch(req, res) {
 
 async function randomSearch(req, res) {}
 
-async function updatePostLikes(req, res) {
-  const { userId, postId } = req.body;
+async function incrementPostLikes(req, res) {
+  const { postId, userId } = req.body;
+  console.log("userId typeof: ", typeof userId, "value:", userId);
+  console.log("postId typeof: ", typeof postId, "value:", postId);
+
+  if (!userId || !postId) {
+    return res.status(400).json({ message: "userId and postId are required" });
+  }
+
+  try {
+    const updatedPost = await prisma.post.update({
+      where: { id: Number(postId) },
+      data: {
+        likes: { increment: 1 },
+        likedBy: { connect: { id: Number(userId) } },
+      },
+    });
+
+    return res.status(200).json({ message: "Incremented", post: updatedPost });
+  } catch (err) {
+    console.error("incrementPostLikes error:", err);
+    return res
+      .status(500)
+      .json({ message: "Internal server error", error: String(err) });
+  }
+}
+
+async function decrementPostLikes(req, res) {
+  const { postId, userId } = req.body;
 
   try {
     await prisma.post.update({
@@ -186,13 +228,16 @@ async function updatePostLikes(req, res) {
         id: Number(postId),
       },
       data: {
-        likes: { incremente: 1 },
+        likes: { decrement: 1 },
         likedBy: {
-          connect: { id: userId },
+          disconnect: { id: Number(userId) },
         },
       },
     });
-  } catch (err) {}
+    return res.status(200).json({ message: "Decremented" });
+  } catch (err) {
+    return res.status(500).json({ message: "Internal server error" });
+  }
 }
 
 async function updatePostSaved(req, res) {}
@@ -203,6 +248,7 @@ module.exports = {
   findPostsByUserId,
   findPostById,
   findPostsSearch,
-  updatePostLikes,
-  findPostsFromFollowed
+  incrementPostLikes,
+  decrementPostLikes,
+  findPostsFromFollowed,
 };

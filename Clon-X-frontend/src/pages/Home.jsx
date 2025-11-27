@@ -1,7 +1,11 @@
 import { useEffect, useState, useContext } from "react";
 import { UserContext } from "../context/userContext";
-import { getPostsFromFollowed } from "../services/postService";
-import { Heart } from "lucide-react";
+import {
+  getPostsFromFollowed,
+  incrementLikes,
+  decrementLikes,
+} from "../services/postService";
+import { Heart, MessageCircle, Repeat2 } from "lucide-react";
 
 export default function Home() {
   const [posts, setPosts] = useState([]);
@@ -25,17 +29,50 @@ export default function Home() {
       </h2>
 
       {posts.map((post) => (
-        <PostCard key={post.id} post={post} />
+        <PostCard key={post.id} post={post} loginUser={loginUser} />
       ))}
     </div>
   );
 }
 
-function PostCard({ post }) {
+import { useNavigate } from "react-router-dom";
+import CommentModal from "../components/CommentModal";
+import { createComment } from "../services/commentService"; // supuesto endpoint
+
+export function PostCard({ post, loginUser, disableNavigate = false }) {
+  console.log(post);
   const [likes, setLikes] = useState(post.likes);
+  const [comments, setComments] = useState(post.comments);
+  const [liked, setLiked] = useState(false);
+  const [isOpenedModal, setIsOpenedModal] = useState(false);
+  const navigate = useNavigate();
 
   function toggleLike() {
-    setLikes((prev) => prev + 1); // solo UI, sin back
+    if (!liked) {
+      incrementLikes(post.id, loginUser.id);
+      setLikes(likes + 1);
+      setLiked(true);
+    } else {
+      decrementLikes(post.id, loginUser.id);
+      setLikes(likes - 1);
+      setLiked(false);
+    }
+  }
+
+  function handleModal() {
+    setIsOpenedModal(true);
+  }
+
+  function handleNavigate() {
+    if (disableNavigate) return; 
+    navigate("details", {
+        state : {post, comments}
+    });
+  }
+
+  async function handleSubmitComment(commentText) {
+    await createComment(post.id, loginUser.id, commentText);
+    // Podés actualizar la UI del post si querés
   }
 
   const formattedDate = new Date(post.createdAt).toLocaleDateString("es-AR", {
@@ -44,46 +81,97 @@ function PostCard({ post }) {
   });
 
   return (
-    <div className="flex p-4 border-b border-gray-200 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-900 transition cursor-pointer">
-      
-      {/* Avatar */}
-      <img
-        src={
-          post.author.profile?.avatar ||
-          "https://abs.twimg.com/sticky/default_profile_images/default_profile_400x400.png"
-        }
-        alt={post.author.username}
-        className="w-12 h-12 rounded-full object-cover mr-3"
-      />
+    <>
+    <div className="flex flex-row "></div>
+      <div
+        onClick={handleNavigate}
+        role="button"
+        tabIndex={0}
+        className={!disableNavigate ? "cursor-pointer" : ""}
+      >
+        <div className="flex-1">
+          <div className="flex p-4 border-b border-gray-200 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-900 transition cursor-pointer">
+            {/* Avatar */}
+            <img
+              src={
+                post.author.profile?.avatar ||
+                "https://abs.twimg.com/sticky/default_profile_images/default_profile_400x400.png"
+              }
+              alt={post.author.username}
+              className="w-12 h-12 rounded-full object-cover mr-3"
+            />
 
-      {/* Contenido */}
-      <div className="flex flex-col flex-1">
-        {/* Header */}
-        <div className="flex items-center space-x-2">
-          <span className="font-semibold">{post.author.name}</span>
-          <span className="text-gray-500">@{post.author.username}</span>
-          <span className="text-gray-500 text-sm">· {formattedDate}</span>
-        </div>
+            {/* Contenido */}
+            <div className="flex flex-col flex-1">
+              {/* Header */}
+              <div className="flex items-center space-x-2">
+                <span className="font-semibold">{post.author.name}</span>
+                <span className="text-gray-500">@{post.author.username}</span>
+                <span className="text-gray-500 text-sm">· {formattedDate}</span>
+              </div>
 
-        {/* Texto */}
-        <p className="mt-1 text-gray-800 dark:text-gray-300">
-          {post.text}
-        </p>
+              {/* Texto */}
+              <p className="mt-1 text-gray-800 dark:text-gray-300">
+                {post.text}
+              </p>
 
-        {/* Footer */}
-        <div className="flex items-center space-x-6 mt-3">
-          <button
-            className="flex items-center space-x-1 hover:text-red-500 transition"
-            onClick={(e) => {
-              e.stopPropagation();
-              toggleLike();
-            }}
-          >
-            <Heart className="w-5 h-5" />
-            <span>{likes}</span>
-          </button>
+              {/* Footer */}
+              <div className="flex items-center space-x-6 mt-3">
+                <button
+                  className="flex items-center space-x-1 hover:text-sky-500 transition"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleModal();
+                  }}
+                >
+                  <MessageCircle className="w-5 h-5" />
+                  <span>{comments.length}</span>
+                </button>
+
+                <Repeat2 className="ml-28" />
+
+                <button
+                  className="flex items-center space-x-1 hover:text-red-500 transition"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    toggleLike();
+                  }}
+                >
+                  <Heart className="w-5 h-5 ml-28" />
+                  <span>{likes}</span>
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
+
+      {/* MODAL */}
+      <CommentModal
+        isOpen={isOpenedModal}
+        onClose={() => setIsOpenedModal(false)}
+        onSubmitComment={handleSubmitComment}
+        user={loginUser}
+      >
+        <div className="flex space-x-3">
+          <img
+            src={
+              post.author.profile?.avatar ||
+              "https://abs.twimg.com/sticky/default_profile_images/default_profile_400x400.png"
+            }
+            alt={post.author.username}
+            className="w-10 h-10 rounded-full object-cover"
+          />
+          <div>
+            <div className="flex items-center space-x-2">
+              <span className="font-semibold">{post.author.name}</span>
+              <span className="text-gray-500">@{post.author.username}</span>
+              <span className="text-gray-500 text-sm">· {formattedDate}</span>
+            </div>
+            <p className="text-gray-800 dark:text-gray-300">{post.text}</p>
+          </div>
+        </div>
+      </CommentModal>
+    </>
   );
 }

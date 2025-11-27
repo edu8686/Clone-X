@@ -1,6 +1,7 @@
 // src/App.jsx
 import { Outlet } from "react-router-dom";
 import Sidebar from "./components/Sidebar";
+import RightSection from "./components/RightSection";
 
 function App() {
   return (
@@ -11,6 +12,9 @@ function App() {
       <main className="ml-96 flex-1 h-screen overflow-y-auto">
         <Outlet />
       </main>
+      <div className="ml-6 mr-6">
+        <RightSection />
+      </div>
     </div>
   );
 }

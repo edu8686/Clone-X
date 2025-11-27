@@ -15,6 +15,7 @@ import Login from "./pages/Login.jsx";
 import { UserContext } from "./context/UserContext.jsx";
 import { AppProvider } from "./context/AppContext.jsx";
 import Explore from "./pages/Explore.jsx";
+import PostDetails from "./pages/PostDetails.jsx";
 
 export const Protected = ({ children }) => {
   const { loginUser, loading } = useContext(UserContext);
@@ -62,6 +63,10 @@ const router = createBrowserRouter([
     {
       path:"explore",
       element: <Explore />
+    },
+    {
+      path:"details",
+      element:<PostDetails />
     }
   ],
   },

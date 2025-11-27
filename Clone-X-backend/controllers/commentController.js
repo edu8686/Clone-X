@@ -1,7 +1,7 @@
 const prisma = require("../prisma");
 
 async function createComment(req, res) {
-  const { postId, text, userId } = req.body;
+  const { postId, userId, text } = req.body;
 
   if (!postId || !text || !userId) {
     return res.status(400).json({ message: "Fields missing or invalid data" });
