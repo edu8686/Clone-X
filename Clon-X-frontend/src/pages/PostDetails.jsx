@@ -18,6 +18,7 @@ export default function PostDetails() {
         loginUser={loginUser}
         disableNavigate={true}
       />
+      
       {comments.map((comment) => (
         <div key={comment.id}>
           {console.log("Comment in map: ", comment.text)}

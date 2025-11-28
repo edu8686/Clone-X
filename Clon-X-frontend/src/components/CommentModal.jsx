@@ -1,8 +1,10 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { X } from "lucide-react";
+import { PostContext } from "../context/PostContext";
 
 export default function CommentModal({ isOpen, onClose, onSubmitComment, user, children }) {
   const [commentText, setCommentText] = useState("");
+  const { currentPost } = useContext(PostContext)
 
   if (!isOpen) return null;
 
@@ -47,13 +49,19 @@ export default function CommentModal({ isOpen, onClose, onSubmitComment, user, c
             className="w-10 h-10 rounded-full object-cover mr-4"
           />
 
+          <div className="flex flex-col">
+          <div>
+            Replying to {"@"+currentPost.author.username}
+          </div>
+
           <textarea
             className="flex-1 bg-transparent resize-none text-lg focus:outline-none text-gray-800 dark:text-gray-200"
-            placeholder="Responder..."
+            placeholder="Post your answer..."
             rows={3}
             value={commentText}
             onChange={(e) => setCommentText(e.target.value)}
           ></textarea>
+          </div>
         </div>
 
         {/* Botón responder */}

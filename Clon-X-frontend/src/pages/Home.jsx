@@ -1,15 +1,22 @@
 import { useEffect, useState, useContext } from "react";
 import { UserContext } from "../context/userContext";
+import { PostContext } from "../context/PostContext";
 import {
   getPostsFromFollowed,
   incrementLikes,
   decrementLikes,
 } from "../services/postService";
 import { Heart, MessageCircle, Repeat2 } from "lucide-react";
+import NewPost from "../components/NewPost";
 
 export default function Home() {
   const [posts, setPosts] = useState([]);
   const { loginUser } = useContext(UserContext);
+  const { setCurrentPost } = useContext(PostContext);
+
+  function handleClick(post) {
+    setCurrentPost(post);
+  }
 
   useEffect(() => {
     if (!loginUser) return;
@@ -27,9 +34,15 @@ export default function Home() {
       <h2 className="text-2xl font-bold p-4 border-b border-gray-200 dark:border-gray-800">
         Inicio
       </h2>
+      <NewPost />
 
       {posts.map((post) => (
-        <PostCard key={post.id} post={post} loginUser={loginUser} />
+        <PostCard
+          key={post.id}
+          post={post}
+          handleClick={handleClick}
+          loginUser={loginUser}
+        />
       ))}
     </div>
   );
@@ -39,8 +52,14 @@ import { useNavigate } from "react-router-dom";
 import CommentModal from "../components/CommentModal";
 import { createComment } from "../services/commentService"; // supuesto endpoint
 
-export function PostCard({ post, loginUser, disableNavigate = false }) {
-  console.log(post);
+export function PostCard({
+  post,
+  loginUser,
+  disableNavigate = false,
+  handleClick,
+}) {
+  console.log("Post: ", post);
+
   const [likes, setLikes] = useState(post.likes);
   const [comments, setComments] = useState(post.comments);
   const [liked, setLiked] = useState(false);
@@ -64,9 +83,9 @@ export function PostCard({ post, loginUser, disableNavigate = false }) {
   }
 
   function handleNavigate() {
-    if (disableNavigate) return; 
+    if (disableNavigate) return;
     navigate("details", {
-        state : {post, comments}
+      state: { post, comments },
     });
   }
 
@@ -82,9 +101,13 @@ export function PostCard({ post, loginUser, disableNavigate = false }) {
 
   return (
     <>
-    <div className="flex flex-row "></div>
+      <div className="flex flex-row "></div>
       <div
-        onClick={handleNavigate}
+        onClick={() => {
+          handleClick(post);
+          localStorage.setItem("post", post.id);
+          setTimeout(() => handleNavigate(), 0);
+        }}
         role="button"
         tabIndex={0}
         className={!disableNavigate ? "cursor-pointer" : ""}
@@ -122,6 +145,7 @@ export function PostCard({ post, loginUser, disableNavigate = false }) {
                   onClick={(e) => {
                     e.stopPropagation();
                     handleModal();
+                    handleClick(post)
                   }}
                 >
                   <MessageCircle className="w-5 h-5" />

@@ -1,7 +1,7 @@
 import { Heart } from "lucide-react";
 
 export default function Comment({ comment }) {
-  console.log("Comment in Component Comment: ", comment);
+
   const formattedDate = new Date(comment.createdAt).toLocaleDateString(
     "es-AR",
     { day: "numeric", month: "short" }

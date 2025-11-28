@@ -50,3 +50,25 @@ export async function decrementLikes(postId, userId){
 }
 
 export async function getPostsByUserId() {}
+
+export async function createPost(userId, text) {
+  const token = localStorage.getItem("token");
+
+  try {
+    const newPost = await fetch(`${API_URL}/post/new-post`, {
+      method : "POST",
+      headers : {
+        "Content-type" : "application/json",
+        Authorization : `Bearer ${token}`
+      },
+      body : JSON.stringify({ userId, text })
+    })
+    const data = await newPost.json();
+    if(data){
+      alert("Post created")
+    }
+    return data
+  } catch (err) {
+    console.log(err)
+  }
+}
