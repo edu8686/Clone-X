@@ -165,7 +165,7 @@ model Message {
   senderId Int
   chat     Chat @relation(fields: [chatId], references: [id])
   chatId   Int
-
+  
   images Image[] @relation("MessageImages")
 }
 

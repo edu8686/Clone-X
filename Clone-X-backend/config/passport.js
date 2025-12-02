@@ -51,7 +51,7 @@ passport.use(
 
 passport.use( new JwtStrategy(opts, async function(jwt_payload, done){
     try {
-        const user = prisma.user.findUnique({
+        const user = await prisma.user.findUnique({
             where : {
                 id : jwt_payload.id
             }
@@ -68,7 +68,7 @@ passport.use( new JwtStrategy(opts, async function(jwt_payload, done){
     }
 }))
 
-module.exports = passport;
 module.exports = {
+  passport,
   createJWT
 };

@@ -1,7 +1,7 @@
 const { Router } = require("express");
 const postRouter = Router();
 const postController = require("../controllers/postController");
-const passport = require("passport")
+const {passport} = require("../config/passport")
 
 postRouter.post(
   "/new-post",
