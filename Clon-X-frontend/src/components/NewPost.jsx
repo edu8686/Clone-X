@@ -59,7 +59,7 @@ export default function NewPost() {
           <button
             className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-1.5 rounded-full font-semibold transition disabled:opacity-50"
             disabled={postText.trim() === ""}
-            onClick={() => createPost(loginUser.id, postText)}
+            onClick={() => {createPost(loginUser.id, postText); setPostText("")} }
           >
             Post
           </button>

@@ -26,4 +26,53 @@ async function createMessage(req, res){
     }
 }
 
-module.exports = {createMessage}
+// GET /chat/messages/:query
+async function searchMessages(req, res) {
+  const { query } = req.params;
+  const userId = req.user.id; // asumimos que usás auth con passport/jwt
+
+  if (!query || !query.trim()) {
+    return res.status(400).json({ message: "Query is required" });
+  }
+
+  try {
+    const messages = await prisma.message.findMany({
+      where: {
+        text: {
+          contains: query,
+          mode: "insensitive", // ✅ no distingue mayúsculas/minúsculas
+        },
+        chat: {
+          users: {
+            some: {
+              userId: userId, // ✅ solo mensajes de chats donde participa el usuario
+            },
+          },
+        },
+      },
+      include: {
+        chat: true,
+        sender: {
+          select: {
+            id: true,
+            name: true,
+            username: true,
+          },
+        },
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+
+    return res.json(messages);
+  } catch (err) {
+    return res.status(500).json({
+      message: "Internal server error",
+      err,
+    });
+  }
+}
+
+
+module.exports = {createMessage, searchMessages}

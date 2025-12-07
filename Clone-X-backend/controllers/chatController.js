@@ -107,6 +107,26 @@ async function getChats(req, res) {
   }
 }
 
+async function getChatMessages(req, res) {
+  const { chatId } = req.params;
+
+  try {
+    const messages = await prisma.message.findMany({
+      where: {
+        chatId: Number(chatId),
+      },
+      orderBy: {
+        createdAt: "asc", // para mostrarlos en orden correcto
+      },
+    });
+
+    return res.json(messages);
+  } catch (err) {
+    return res.status(500).json({ message: "Internal server error", err });
+  }
+}
+
+
 async function deleteChat(req, res) {
   const { chatId } = req.params;
   console.log("chatId: ", chatId);
@@ -134,4 +154,5 @@ module.exports = {
   createChat,
   getChats,
   deleteChat,
+  getChatMessages
 };

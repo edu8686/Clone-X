@@ -16,6 +16,8 @@ import { UserContext } from "./context/UserContext.jsx";
 import { AppProvider } from "./context/AppContext.jsx";
 import Explore from "./pages/Explore.jsx";
 import PostDetails from "./pages/PostDetails.jsx";
+import NormalLayout from "./pages/layouts/NormalLayout.jsx";
+import ChatLayout from "./pages/layouts/ChatsLayout.jsx";
 
 export const Protected = ({ children }) => {
   const { loginUser, loading } = useContext(UserContext);
@@ -33,22 +35,6 @@ export const Public = ({ children }) => {
 
 const router = createBrowserRouter([
   {
-    path: "/sign-up",
-    element: (
-      <Public>
-        <SignUp />
-      </Public>
-    ),
-  },
-  {
-    path: "/auth/login",
-    element: (
-      <Public>
-        <Login />
-      </Public>
-    ),
-  },
-  {
     path: "/",
     element: (
       <Protected>
@@ -57,19 +43,24 @@ const router = createBrowserRouter([
     ),
     children: [
       {
-      path: "/",
-      element : <Home />
-    }, 
-    {
-      path:"explore",
-      element: <Explore />
-    },
-    {
-      path:"details",
-      element:<PostDetails />
-    }
-  ],
+        element: <NormalLayout />,
+        children: [
+          { path: "/", element: <Home /> },
+          { path: "explore", element: <Explore /> },
+          { path: "details", element: <PostDetails /> },
+        ],
+      },
+
+      {
+        path: "chat",
+        element: <ChatLayout />,
+      },
+    ],
   },
+
+  // Rutas públicas
+  { path: "/sign-up", element: <Public><SignUp /></Public> },
+  { path: "/auth/login", element: <Public><Login /></Public> },
 ]);
 
 createRoot(document.getElementById("root")).render(

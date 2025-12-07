@@ -9,14 +9,16 @@ function App() {
       <aside className="w-64 h-screen fixed top-0 left-0 bg-white dark:bg-black">
         <Sidebar />
       </aside>
+
+      {/* Mantengo tu main con ml-96 y overflow igual */}
       <main className="ml-96 flex-1 h-screen overflow-y-auto">
         <Outlet />
       </main>
-      <div className="ml-6 mr-6">
-        <RightSection />
-      </div>
+
+
     </div>
   );
 }
 
 export default App;
+

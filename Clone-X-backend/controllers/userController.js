@@ -281,6 +281,36 @@ async function getFollowingsByUserId(userId) {
   return followingsList;
 }
 
+async function getUsers(req, res) {
+  const { query } = req.params; // o req.query si lo mandás por ?query=
+
+  try {
+    const users = await prisma.user.findMany({
+      where: {
+        OR: [
+          {
+            name: {
+              contains: query,
+              mode: "insensitive", // ✅ no distingue mayúsculas
+            },
+          },
+          {
+            username: {
+              contains: query,
+              mode: "insensitive",
+            },
+          },
+        ],
+      },
+    });
+
+    return res.json(users);
+  } catch (err) {
+    return res.status(500).json({ message: "Internal server error", err });
+  }
+}
+
+
 module.exports = {
   signUp,
   startFollow,
@@ -288,4 +318,5 @@ module.exports = {
   getFollowings,
   findUsersNotfollowings,
   deleteFollow,
+  getUsers
 };

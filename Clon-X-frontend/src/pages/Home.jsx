@@ -30,7 +30,7 @@ export default function Home() {
   }, [loginUser?.id]);
 
   return (
-    <div className="flex flex-col border-r border-gray-200 dark:border-gray-800 min-h-screen max-w-2xl">
+    <div className="flex flex-col border-r border-gray-200 dark:border-gray-800 min-h-screen max-w-xl">
       <h2 className="text-2xl font-bold p-4 border-b border-gray-200 dark:border-gray-800">
         Inicio
       </h2>
@@ -101,7 +101,7 @@ export function PostCard({
 
   return (
     <>
-      <div className="flex flex-row "></div>
+      <div className="flex flex-row"></div>
       <div
         onClick={() => {
           handleClick(post);
