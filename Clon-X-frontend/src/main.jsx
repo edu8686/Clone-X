@@ -18,6 +18,7 @@ import Explore from "./pages/Explore.jsx";
 import PostDetails from "./pages/PostDetails.jsx";
 import NormalLayout from "./pages/layouts/NormalLayout.jsx";
 import ChatLayout from "./pages/layouts/ChatsLayout.jsx";
+import Profile from "./pages/Profile.jsx"
 
 export const Protected = ({ children }) => {
   const { loginUser, loading } = useContext(UserContext);
@@ -48,6 +49,7 @@ const router = createBrowserRouter([
           { path: "/", element: <Home /> },
           { path: "explore", element: <Explore /> },
           { path: "details", element: <PostDetails /> },
+          { path: "profile/:userId", element: <Profile />}
         ],
       },
 

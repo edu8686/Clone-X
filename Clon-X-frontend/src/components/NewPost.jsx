@@ -37,10 +37,8 @@ export default function NewPost() {
           ></textarea>
         </div>
 
-        {/* Footer */}
         <div className="flex flex-row items-center justify-between mt-3 mb-3 border-t border-gray-200 pt-5">
 
-          {/* Íconos */}
           <div className="flex flex-row space-x-4 text-sky-500">
             <button className="hover:text-sky-600 transition">
               <Image className="w-5 h-5" />
@@ -55,7 +53,6 @@ export default function NewPost() {
             </button>
           </div>
 
-          {/* Botón Post */}
           <button
             className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-1.5 rounded-full font-semibold transition disabled:opacity-50"
             disabled={postText.trim() === ""}

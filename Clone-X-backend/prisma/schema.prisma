@@ -35,15 +35,15 @@ model User {
   messages   Message[]   @relation("UserMessages")
 
   // Métricas
-  likes   Int @default(0)
+  numLikes   Int @default(0)
   reposts Int @default(0)
 
-  likedPosts Post[] @relation("UserLikesPost")
+  likes     Like[]
+
 }
 
 model Profile {
   id           Int       @id @default(autoincrement())
-  name         String
   lastName     String?
   birth        DateTime?
   createdAt    DateTime  @default(now())
@@ -62,9 +62,10 @@ model Post {
   id        Int      @id @default(autoincrement())
   text      String
   createdAt DateTime @default(now())
-  likes     Int      @default(0)
-  likedBy   User[]   @relation("UserLikesPost")
-  saved     Int      @default(0)
+  numLikes     Int      @default(0)
+  likes     Like[]
+
+  saved Int @default(0)
 
   // Relaciones
   author   User        @relation(fields: [userId], references: [id])
@@ -121,6 +122,17 @@ model SavedPost {
   @@id([userId, postId])
 }
 
+model Like {
+  id     Int @id @default(autoincrement())
+  userId Int
+  postId Int
+
+  user User @relation(fields: [userId], references: [id])
+  post Post @relation(fields: [postId], references: [id])
+
+  @@unique([userId, postId])
+}
+
 model Follow {
   followerId Int
   followedId Int
@@ -165,7 +177,7 @@ model Message {
   senderId Int
   chat     Chat @relation(fields: [chatId], references: [id])
   chatId   Int
-  
+
   images Image[] @relation("MessageImages")
 }
 

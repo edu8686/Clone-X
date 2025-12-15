@@ -15,6 +15,12 @@ export default function Chat() {
   const [messageResults, setMessageResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
 
+  console.log("Selectedchat: ", selectedChat)
+
+const otherUser = selectedChat?.users?.find(
+    u => u.userId !== loginUser.id
+  )?.user;
+
   async function handleQuery(query) {
     if (!query.trim()) {
       setUserResults([]);
@@ -105,12 +111,13 @@ export default function Chat() {
       socket.disconnect();
     };
   }, []);
-  
+
   function getDate(date) {
     const d = new Date(date);
 
     const day = d.getDate();
-    const month = d.toLocaleString("es-AR", { month: "long" }).slice(0,3)+".";
+    const month =
+      d.toLocaleString("es-AR", { month: "long" }).slice(0, 3) + ".";
     const year = d.getFullYear();
 
     const lastDate = `${day} de ${month} de ${year}`;
@@ -227,11 +234,18 @@ export default function Chat() {
               <div className="flex flex-col">
                 <div className="flex flex-row">
                   <span className="font-semibold truncate">
-                    {chat.users[1]?.user.name || "User"}
+                    {chat.users.find((u) => u.userId !== loginUser.id)?.user
+                      .name || "User"}
                   </span>
+
                   <span className="font-light ml-2 text-base">
-                    {"@" + chat.users[1]?.user.username}
+                    @
+                    {
+                      chat.users.find((u) => u.userId !== loginUser.id)?.user
+                        .username
+                    }
                   </span>
+
                   <span className="text-sm  text-gray-500 truncate ml-2 mt-[3px] items-center">
                     {chat?.messages?.length
                       ? getDate(
@@ -258,10 +272,8 @@ export default function Chat() {
           <div className="border-b border-gray-200 dark:border-gray-800 p-4 flex items-center gap-3">
             <div className="w-10 h-10 rounded-full bg-gray-300 dark:bg-gray-800"></div>
             <div className="flex flex-col">
-              <span>{selectedChat.users?.[1]?.user?.name || "Usuario"}</span>
-              <span>
-                {"@" + (selectedChat.users?.[1]?.user?.username || "")}
-              </span>
+              <span>{otherUser?.name}</span>
+              <span>@{otherUser?.username}</span>
             </div>
           </div>
         ) : (

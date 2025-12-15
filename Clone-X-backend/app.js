@@ -23,7 +23,7 @@ const server = http.createServer(app);
 const io = new Server(server, {
     cors: {
         origin: ["http://localhost:5173", "http://localhost:5174"],
-        methods: ["GET", "POST", "PUT", "DELETE"],
+        methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
         credentials: true,
     }
 })
@@ -38,13 +38,16 @@ app.use(cors({
         "http://localhost:5173",
         "http://localhost:5174",
     ],
-    methods : ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    methods : ["GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS"],
     creedentials: true
 }));
 
 // 5. Import dotenv para manejar los entornos de desarrollo y producción
 
 const dotenv = require("dotenv");
+
+const cloudinary = require("cloudinary").v2;
+
 
 // 6. Cargar .env o .env.production automaticamente 
 dotenv.config({

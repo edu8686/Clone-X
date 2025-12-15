@@ -22,32 +22,45 @@ export async function getPostsFromFollowed(userId) {
 }
 
 export async function incrementLikes(postId, userId){
+  const token = localStorage.getItem("token");
   try {
-    await fetch(`${API_URL}/post/i`, {
+    const res = await fetch(`${API_URL}/post/i`, {
       method : "PUT",
       headers : {
-        "content-type" : "application/json"
+        "content-type" : "application/json",
+        Authorization: `Bearer ${token}`
       },
       body : JSON.stringify({ postId, userId })
-    })
+    });
+    if (!res.ok) throw new Error(`Error ${res.status}`);
+    const data = await res.json();
+    return data.numLikes; // devuelve el número actualizado
   } catch(err){
-    console.log("Error: ", err)
-  }
-} 
-
-export async function decrementLikes(postId, userId){
-  try {
-    await fetch(`${API_URL}/post/d`, {
-      method : "PUT",
-      headers : {
-        "content-type" : "application/json"
-      },
-      body : JSON.stringify({ postId, userId })
-    })
-  } catch(err){
-    console.log("Error: ", err)
+    console.log("Error incrementLikes: ", err);
+    throw err;
   }
 }
+
+export async function decrementLikes(postId, userId){
+  const token = localStorage.getItem("token");
+  try {
+    const res = await fetch(`${API_URL}/post/d`, {
+      method : "PUT",
+      headers : {
+        "content-type" : "application/json",
+        Authorization: `Bearer ${token}`
+      },
+      body : JSON.stringify({ postId, userId })
+    });
+    if (!res.ok) throw new Error(`Error ${res.status}`);
+    const data = await res.json();
+    return data.numLikes;
+  } catch(err){
+    console.log("Error decrementLikes: ", err);
+    throw err;
+  }
+}
+
 
 export async function getPostsByUserId() {}
 

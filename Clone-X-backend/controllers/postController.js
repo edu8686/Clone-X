@@ -44,18 +44,18 @@ async function deletePost(req, res) {
 async function findPostsFromFollowed(req, res) {
   const { userId } = req.params;
 
-  const follows = await prisma.follow.findMany({
-    where: {
-      followerId: Number(userId),
-    },
-    select: {
-      followedId: true,
-    },
-  });
-
-  const followedIds = follows.map((f) => f.followedId);
-
   try {
+    const follows = await prisma.follow.findMany({
+      where: { followerId: Number(userId) },
+      select: { followedId: true },
+    });
+
+    const followedIds = follows.map((f) => f.followedId);
+
+    if (followedIds.length === 0) {
+      return res.json([]);
+    }
+
     const posts = await prisma.post.findMany({
       where: {
         userId: { in: followedIds },
@@ -66,9 +66,7 @@ async function findPostsFromFollowed(req, res) {
             id: true,
             name: true,
             username: true,
-            profile: {
-              select: { profilePhoto: true },
-            },
+            profile: { select: { profilePhoto: true } },
           },
         },
         comments: {
@@ -78,24 +76,23 @@ async function findPostsFromFollowed(req, res) {
             likes: true,
             createdAt: true,
             author: {
-              select: {
-                id: true,
-                name: true,
-                username: true,
-              },
+              select: { id: true, name: true, username: true },
             },
           },
         },
+        likes: {
+      include: {
+        user: true   // acá obtenés el usuario que dio like
+      }
+    },
       },
-      orderBy: {
-        createdAt: "desc",
-      },
+      orderBy: { createdAt: "desc" },
     });
 
-    res.json(posts);
+    return res.json(posts);
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Error al obtener posts" });
+    console.error("findPostsFromFollowed ERROR:", err);
+    return res.status(500).json({ error: "Error al obtener posts" });
   }
 }
 
@@ -194,24 +191,54 @@ async function randomSearch(req, res) {}
 
 async function incrementPostLikes(req, res) {
   const { postId, userId } = req.body;
-  console.log("userId typeof: ", typeof userId, "value:", userId);
-  console.log("postId typeof: ", typeof postId, "value:", postId);
 
   if (!userId || !postId) {
     return res.status(400).json({ message: "userId and postId are required" });
   }
 
   try {
-    const updatedPost = await prisma.post.update({
-      where: { id: Number(postId) },
-      data: {
-        likes: { increment: 1 },
-        likedBy: { connect: { id: Number(userId) } },
-      },
+    // Transacción atómica: evita race conditions y mantiene counts consistentes
+    const [existingLike] = await prisma.like.findMany({
+      where: { postId: Number(postId), userId: Number(userId) },
+      take: 1,
     });
 
-    return res.status(200).json({ message: "Incremented", post: updatedPost });
+    if (existingLike) {
+      // ya existe, devolvemos el estado actual sin duplicar
+      const post = await prisma.post.findUnique({
+        where: { id: Number(postId) },
+      });
+      return res
+        .status(200)
+        .json({ message: "Already liked", numLikes: post.numLikes });
+    }
+
+    await prisma.$transaction([
+      prisma.like.create({
+        data: { postId: Number(postId), userId: Number(userId) },
+      }),
+      prisma.post.update({
+        where: { id: Number(postId) },
+        data: { numLikes: { increment: 1 } },
+      }),
+    ]);
+
+    const post = await prisma.post.findUnique({
+      where: { id: Number(postId) },
+    });
+    return res
+      .status(200)
+      .json({ message: "Incremented", numLikes: post.numLikes });
   } catch (err) {
+    // si aún así cae P2002 por race, lo manejamos devolviendo estado actual
+    if (err.code === "P2002") {
+      const post = await prisma.post.findUnique({
+        where: { id: Number(postId) },
+      });
+      return res
+        .status(200)
+        .json({ message: "Already liked (race)", numLikes: post.numLikes });
+    }
     console.error("incrementPostLikes error:", err);
     return res
       .status(500)
@@ -222,21 +249,43 @@ async function incrementPostLikes(req, res) {
 async function decrementPostLikes(req, res) {
   const { postId, userId } = req.body;
 
+  if (!userId || !postId) {
+    return res.status(400).json({ message: "userId and postId are required" });
+  }
+
   try {
-    await prisma.post.update({
-      where: {
-        id: Number(postId),
-      },
-      data: {
-        likes: { decrement: 1 },
-        likedBy: {
-          disconnect: { id: Number(userId) },
-        },
-      },
+    const existingLike = await prisma.like.findFirst({
+      where: { postId: Number(postId), userId: Number(userId) },
     });
-    return res.status(200).json({ message: "Decremented" });
+
+    if (!existingLike) {
+      const post = await prisma.post.findUnique({
+        where: { id: Number(postId) },
+      });
+      return res
+        .status(200)
+        .json({ message: "Not liked", numLikes: post.numLikes });
+    }
+
+    await prisma.$transaction([
+      prisma.like.delete({ where: { id: existingLike.id } }),
+      prisma.post.update({
+        where: { id: Number(postId) },
+        data: { numLikes: { decrement: 1 } },
+      }),
+    ]);
+
+    const post = await prisma.post.findUnique({
+      where: { id: Number(postId) },
+    });
+    return res
+      .status(200)
+      .json({ message: "Decremented", numLikes: post.numLikes });
   } catch (err) {
-    return res.status(500).json({ message: "Internal server error" });
+    console.error("decrementPostLikes error:", err);
+    return res
+      .status(500)
+      .json({ message: "Internal server error", error: String(err) });
   }
 }
 

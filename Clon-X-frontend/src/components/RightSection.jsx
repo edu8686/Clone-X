@@ -13,7 +13,7 @@ export default function RightSection() {
           <button
             className="w-[120px] px-4 py-1.5 border border-gray-300 dark:border-gray-700 rounded-full text-sm font-semibold bg-blue-400 text-white dark:text-white hover:bg-blue-500 dark:hover:bg-gray-800 transition-colors mb-2"
             onClick={() => {
-              alert("Decoration section");
+              alert("Decorative section");
             }}
           >
             Suscribirse
