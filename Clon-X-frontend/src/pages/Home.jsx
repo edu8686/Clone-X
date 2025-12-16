@@ -132,10 +132,10 @@ export function PostCard({
           <div className="flex p-4 border-b border-gray-200 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-900 transition cursor-pointer">
             <img
               src={
-                post.author.profile?.avatar ||
+                post.author?.profile?.avatar ||
                 "https://abs.twimg.com/sticky/default_profile_images/default_profile_400x400.png"
               }
-              alt={post.author.username}
+              alt={post.author?.username}
               className="w-12 h-12 rounded-full object-cover mr-3"
             />
 
@@ -148,10 +148,10 @@ export function PostCard({
                   }}
                 >
                   <span className="font-semibold hover:underline hover:cursor-pointer">
-                    {post.author.name}
+                    {post.author?.name}
                   </span>
                 </button>
-                <span className="text-gray-500">@{post.author.username}</span>
+                <span className="text-gray-500">@{post.author?.username}</span>
                 <span className="text-gray-500 text-sm">· {formattedDate}</span>
               </div>
 
@@ -169,7 +169,7 @@ export function PostCard({
                   }}
                 >
                   <MessageCircle className="w-5 h-5" />
-                  <span>{comments.length}</span>
+                  <span>{comments?.length}</span>
                 </button>
 
                 <Repeat2 className="ml-28" />

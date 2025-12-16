@@ -8,7 +8,7 @@ async function getProfile(req, res) {
   try {
     const profile = await prisma.profile.findFirst({
       where: { userId: id },
-      include: { user: true },
+      include: { user: { include : {followers : true, following : true, posts : true}} },
     });
 
     if (!profile) {
@@ -71,11 +71,21 @@ async function updateProfile(req, res) {
       });
     }
 
-    // 5️⃣ Actualizar PROFILE (tabla profiles)
-    const updatedProfile = await prisma.profile.update({
+    let updatedProfile;
+    const existingProfile = await prisma.profile.findUnique({
       where: { userId },
-      data: profileData,
     });
+
+    if (existingProfile) {
+      updatedProfile = await prisma.profile.update({
+        where: { userId },
+        data: profileData,
+      });
+    } else {
+      updatedProfile = await prisma.profile.create({
+        data: { userId, ...profileData },
+      });
+    }
 
     // 6️⃣ Respuesta
     res.json(updatedProfile);

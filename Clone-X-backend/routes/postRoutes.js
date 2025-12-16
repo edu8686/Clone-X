@@ -1,7 +1,7 @@
 const { Router } = require("express");
 const postRouter = Router();
 const postController = require("../controllers/postController");
-const {passport} = require("../config/passport")
+const { passport } = require("../config/passport");
 
 postRouter.post(
   "/new-post",
@@ -28,10 +28,16 @@ postRouter.get(
 );
 
 postRouter.get(
-  "/:userId/followed", 
-  passport.authenticate("jwt", {session : false}),
+  "/:userId/followed",
+  passport.authenticate("jwt", { session: false }),
   postController.findPostsFromFollowed
-)
+);
+
+postRouter.get(
+  "/liked/:userId",
+  passport.authenticate("jwt", { session: false }),
+  postController.findPostsLikedByUserId
+);
 
 postRouter.delete(
   "/:postId",
@@ -39,13 +45,8 @@ postRouter.delete(
   postController.deletePost
 );
 
-postRouter.put("/i",
-  postController.incrementPostLikes
-)
+postRouter.put("/i", postController.incrementPostLikes);
 
-postRouter.put("/d",
-  postController.decrementPostLikes
-)
-
+postRouter.put("/d", postController.decrementPostLikes);
 
 module.exports = postRouter;

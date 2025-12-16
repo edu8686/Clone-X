@@ -29,8 +29,8 @@ model User {
   comments   Comment[]
   savedPosts SavedPost[]
   lists      List[]
-  following  Follow[]    @relation("Following") // yo sigo a otros (salgo como follower)
-  followers  Follow[]    @relation("Followers") // otros me siguen a mí (salgo como followed)
+  following  Follow[]    @relation("Following") 
+  followers  Follow[]    @relation("Followers") 
   chats      UserChat[]
   messages   Message[]   @relation("UserMessages")
 

@@ -81,10 +81,10 @@ async function findPostsFromFollowed(req, res) {
           },
         },
         likes: {
-      include: {
-        user: true   // acá obtenés el usuario que dio like
-      }
-    },
+          include: {
+            user: true, // acá obtenés el usuario que dio like
+          },
+        },
       },
       orderBy: { createdAt: "desc" },
     });
@@ -115,10 +115,15 @@ async function findPostsByUserId(req, res) {
         userId: Number(userId),
       },
       include: {
-        author: true,
+        author: {
+          include: {
+            profile: true,
+          },
+        },
       },
     });
-    return res.status(200).json({ message: "Post found", post });
+
+    return res.status(200).json({ message: "Post found", posts });
   } catch (err) {
     if (err.code === "P2025") {
       console.log("Error 404: ", err);
@@ -187,7 +192,38 @@ async function findPostsSearch(req, res) {
   }
 }
 
-async function randomSearch(req, res) {}
+
+async function findPostsLikedByUserId(req, res) {
+  const { userId } = req.params;
+
+  if (isNaN(Number(userId))) {
+    return res.status(400).json({ message: "Invalid user ID" });
+  }
+
+  console.log("userId: ", userId);
+
+  try {
+    const likes = await prisma.like.findMany({
+      where: {
+        userId: Number(userId),
+      },
+      include : {
+        post : {
+          include : {
+            author : true
+          }
+        }
+      }
+    });
+    console.log("likes: ", likes)
+    const posts = likes.map(like => like.post);
+    console.log("posts: ", posts)
+
+    res.status(200).json({ message: "Posts found", posts });
+  } catch (err) {
+    return res.status(500).json({ error: "Error fetching liked posts" });
+  }
+}
 
 async function incrementPostLikes(req, res) {
   const { postId, userId } = req.body;
@@ -300,4 +336,5 @@ module.exports = {
   incrementPostLikes,
   decrementPostLikes,
   findPostsFromFollowed,
+  findPostsLikedByUserId
 };

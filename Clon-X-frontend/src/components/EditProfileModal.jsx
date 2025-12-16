@@ -2,7 +2,7 @@ import { X, Camera } from "lucide-react";
 import { useState, useEffect } from "react";
 import { editProfile } from "../services/profileService";
 
-export default function EditProfileModal({ user, edit, onClose }) {
+export default function EditProfileModal({ user, setUser, edit, onClose }) {
   console.log("user: ", user);
   console.log(user.profile?.user?.name);
   const [formData, setFormData] = useState({
@@ -27,6 +27,7 @@ export default function EditProfileModal({ user, edit, onClose }) {
         birth: user.profile?.birth ?? "",
         location: user.profile?.location ?? "",
         banner: user.profile?.banner ?? null,
+        profilePhoto: user.profile?.profilePhoto ?? null,
       });
 
       setBannerPreview(user.profile?.banner ?? "");
@@ -67,36 +68,43 @@ export default function EditProfileModal({ user, edit, onClose }) {
     handleChange("banner", null);
   }
 
-  async function handleSave() {
-    console.log("handleSave ejecutado");
-    console.log("STATE:", formData);
+async function handleSave() {
+  console.log("handleSave ejecutado");
+  console.log("STATE:", formData);
 
-    const fd = new FormData();
+  const fd = new FormData();
 
-    console.log("banner value:", formData.banner);
-    console.log(formData.banner instanceof File);
+  if (formData.name.trim()) fd.append("name", formData.name);
+  if (formData.profilePhoto instanceof File) fd.append("profilePhoto", formData.profilePhoto);
+  if (formData.biography.trim()) fd.append("biography", formData.biography);
+  if (formData.birth.trim()) fd.append("birth", formData.birth);
+  if (formData.location.trim()) fd.append("location", formData.location);
+  if (formData.banner instanceof File) fd.append("banner", formData.banner);
 
-    if (formData.name.trim()) fd.append("name", formData.name);
-    if (formData.profilePhoto instanceof File) {
-      fd.append("profilePhoto", formData.profilePhoto);
-    }
-    if (formData.biography.trim()) fd.append("biography", formData.biography);
-    if (formData.birth.trim()) fd.append("birth", formData.birth);
-    if (formData.location.trim()) fd.append("location", formData.location);
-    if (formData.banner instanceof File) {
-      fd.append("banner", formData.banner);
-    }
+  console.log("FormData keys:", [...fd.keys()]);
 
-    console.log("FormData keys:", [...fd.keys()]);
-
-    if ([...fd.keys()].length === 0) {
-      onClose();
-      return;
-    }
-
-    await editProfile(fd);
+  if ([...fd.keys()].length === 0) {
     onClose();
+    return;
   }
+
+  try {
+    // ⚡ Guardamos en backend
+    const updatedProfile = await editProfile(fd);
+
+    // ⚡ Actualizamos el user con la respuesta real
+    setUser((prev) => ({
+      ...prev,
+      profile: updatedProfile,
+    }));
+
+    // ⚡ Cerramos el modal
+    onClose();
+  } catch (err) {
+    console.error("Error updating profile:", err);
+  }
+}
+
 
   if (!edit) return null;
 
