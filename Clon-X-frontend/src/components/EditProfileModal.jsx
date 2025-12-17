@@ -11,7 +11,7 @@ export default function EditProfileModal({ user, setUser, edit, onClose }) {
     biography: "",
     birth: "",
     location: "",
-    banner: null, // importante
+    banner: null, 
   });
 
   const [bannerPreview, setBannerPreview] = useState("");
@@ -48,7 +48,6 @@ export default function EditProfileModal({ user, setUser, edit, onClose }) {
     const previewUrl = URL.createObjectURL(file);
     setProfilePhotoPreview(previewUrl);
 
-    // guardamos el archivo para enviar luego
     handleChange("profilePhoto", file);
   }
 
@@ -89,16 +88,13 @@ async function handleSave() {
   }
 
   try {
-    // ⚡ Guardamos en backend
     const updatedProfile = await editProfile(fd);
 
-    // ⚡ Actualizamos el user con la respuesta real
     setUser((prev) => ({
       ...prev,
       profile: updatedProfile,
     }));
 
-    // ⚡ Cerramos el modal
     onClose();
   } catch (err) {
     console.error("Error updating profile:", err);

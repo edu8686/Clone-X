@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react";
-import { data, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { API_URL } from "../config";
 import EditProfileModal from "../components/EditProfileModal";
 import { UserContext } from "../context/userContext";

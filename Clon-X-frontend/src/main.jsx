@@ -9,13 +9,11 @@ import {
   Navigate,
 } from "react-router-dom";
 import SignUp from "./pages/sign-up.jsx";
-import { Router } from "lucide-react";
 import Home from "./pages/Home.jsx"
 import Login from "./pages/Login.jsx";
 import { UserContext } from "./context/UserContext.jsx";
 import { AppProvider } from "./context/AppContext.jsx";
 import Explore from "./pages/Explore.jsx";
-import PostDetails from "./pages/PostDetails.jsx";
 import NormalLayout from "./pages/layouts/NormalLayout.jsx";
 import ChatLayout from "./pages/layouts/ChatsLayout.jsx";
 import Profile from "./pages/Profile.jsx"
@@ -23,7 +21,7 @@ import Profile from "./pages/Profile.jsx"
 export const Protected = ({ children }) => {
   const { loginUser, loading } = useContext(UserContext);
 
-  if (loading) return <div>Cargando...</div>; // espera a que loginUser se recupere
+  if (loading) return <div>Cargando...</div>;
   if (!loginUser) return <Navigate to="/auth/login" replace />;
 
   return children;
@@ -36,6 +34,22 @@ export const Public = ({ children }) => {
 
 const router = createBrowserRouter([
   {
+    path: "/auth/login",
+    element: (
+      <Public>
+        <Login />
+      </Public>
+    ),
+  },
+  {
+    path: "/sign-up",
+    element: (
+      <Public>
+        <SignUp />
+      </Public>
+    ),
+  },
+  {
     path: "/",
     element: (
       <Protected>
@@ -46,24 +60,19 @@ const router = createBrowserRouter([
       {
         element: <NormalLayout />,
         children: [
-          { path: "/", element: <Home /> },
+          { index: true, element: <Home /> },
           { path: "explore", element: <Explore /> },
-          { path: "details", element: <PostDetails /> },
-          { path: "profile/:userId", element: <Profile />}
+          { path: "profile/:userId", element: <Profile /> },
         ],
       },
-
       {
         path: "chat",
         element: <ChatLayout />,
       },
     ],
   },
-
-  // Rutas públicas
-  { path: "/sign-up", element: <Public><SignUp /></Public> },
-  { path: "/auth/login", element: <Public><Login /></Public> },
 ]);
+
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>

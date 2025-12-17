@@ -19,7 +19,7 @@ async function createMessage(req, res){
                 text : text
             }
         });
-        req.io.to(chatId.toString()).emit("new_message", newMessage);
+        req.io.to(chatId.toString()).emit("newMessage", newMessage);
         return res.status(201).json(newMessage);
     } catch(err){
         res.status(500).json({message: "Internal server error", err});

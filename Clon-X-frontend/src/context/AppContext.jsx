@@ -14,5 +14,3 @@ export function AppProvider({children}){
         </UserProvider>
     )
 }
-
-export { AppContext }

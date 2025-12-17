@@ -1,6 +1,5 @@
 import { useContext, useState } from "react";
 import { X } from "lucide-react";
-import { PostContext } from "../context/PostContext";
 import { UserContext } from "../context/userContext";
 
 export default function PostModal({ isOpen, onClose, onSubmitPost, user, children }) {
@@ -54,7 +53,7 @@ export default function PostModal({ isOpen, onClose, onSubmitPost, user, childre
 
           <textarea
             className="flex-1 bg-transparent resize-none text-lg focus:outline-none text-gray-800 dark:text-gray-200"
-            placeholder="Post your answer..."
+            placeholder="Post..."
             rows={3}
             value={postText}
             onChange={(e) => setPostText(e.target.value)}
@@ -66,7 +65,7 @@ export default function PostModal({ isOpen, onClose, onSubmitPost, user, childre
         <div className="flex justify-end mt-4">
           <button
             onClick={handleSubmit}
-            className="bg-sky-500 hover:bg-sky-600 text-white px-4 py-2 rounded-full font-semibold transition"
+            className="bg-black text-white px-4 py-2 rounded-full font-semibold transition"
           >
             Post
           </button>

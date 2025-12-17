@@ -15,10 +15,8 @@ export default function Chat() {
   const [messageResults, setMessageResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
 
-  console.log("Selectedchat: ", selectedChat)
-
-const otherUser = selectedChat?.users?.find(
-    u => u.userId !== loginUser.id
+  const otherUser = selectedChat?.users?.find(
+    (u) => u.userId !== loginUser.id
   )?.user;
 
   async function handleQuery(query) {
@@ -60,11 +58,11 @@ const otherUser = selectedChat?.users?.find(
   }
 
   useEffect(() => {
-    console.log("Query: ", query);
     handleQuery(query);
   }, [query]);
 
   async function handleSelectChat(chat) {
+    socket.emit("joinChat", chat.id); 
     const fullMessages = await getChatMessages(chat.id);
 
     const fullChats = await getChats();
@@ -75,11 +73,13 @@ const otherUser = selectedChat?.users?.find(
       messages: fullMessages,
     });
 
-    // limpiar búsqueda
+
     setQuery("");
     setUserResults([]);
     setMessageResults([]);
   }
+
+  
 
   useEffect(() => {
     async function load() {
@@ -90,27 +90,41 @@ const otherUser = selectedChat?.users?.find(
   }, []);
 
   useEffect(() => {
-    // Conectar al socket
-    socket.connect();
+  socket.connect();
 
-    // Escuchar cuando llegan nuevos mensajes de cualquier chat
-    socket.on("newMessage", (message) => {
-      console.log("Nuevo mensaje recibido:", message);
+  socket.on("newMessage", (message) => {
+    console.log("Nuevo mensaje recibido:", message);
 
-      setChats((prevChats) => {
-        return prevChats.map((chat) =>
-          chat.id === message.chatId
-            ? { ...chat, messages: [...chat.messages, message] }
-            : chat
-        );
-      });
+    // 1️⃣ Actualizar lista de chats
+    setChats((prevChats) =>
+      prevChats.map((chat) =>
+        chat.id === message.chatId
+          ? {
+              ...chat,
+              messages: [...(chat.messages || []), message],
+            }
+          : chat
+      )
+    );
+
+    // 2️⃣ Actualizar chat abierto
+    setSelectedChat((prev) => {
+      if (!prev) return prev;
+      if (prev.id !== message.chatId) return prev;
+
+      return {
+        ...prev,
+        messages: [...(prev.messages || []), message],
+      };
     });
+  });
 
-    return () => {
-      socket.off("newMessage");
-      socket.disconnect();
-    };
-  }, []);
+  return () => {
+    socket.off("newMessage");
+    socket.disconnect();
+  };
+}, []);
+
 
   function getDate(date) {
     const d = new Date(date);
@@ -199,7 +213,7 @@ const otherUser = selectedChat?.users?.find(
 
                     if (chatFound) {
                       handleSelectChat(chatFound);
-                      setQuery(""); // ✅ limpiar búsqueda
+                      setQuery("");
                       setMessageResults([]);
                       setUserResults([]);
                     } else {
@@ -324,16 +338,6 @@ const otherUser = selectedChat?.users?.find(
                   senderId: loginUser.id,
                   text,
                 });
-
-                // Opcional: actualizar UI inmediatamente (optimistic UI)
-                setSelectedChat((prev) => ({
-                  ...prev,
-                  messages: [
-                    ...prev.messages,
-                    { text, senderId: loginUser.id },
-                  ],
-                }));
-
                 setText("");
               }}
             >

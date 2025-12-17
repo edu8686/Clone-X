@@ -1,10 +1,16 @@
 const API_URL = import.meta.env.VITE_API_URL;
 
+console.log("API_URL:", API_URL);
 
 export async function login(username, password){
+
     if (!username || !password) {
     return { success: false, error: "Ingresar username y password" }
   }
+
+  console.log("API_URL:", API_URL);
+  console.log("username: ", username)
+
 
   try {
     const res = await fetch(`${API_URL}/auth/login`, {
@@ -19,7 +25,7 @@ export async function login(username, password){
       
       localStorage.setItem("token", data.token);
 
-      localStorage.setItem("user", JSON.stringify(data.user));
+      localStorage.setItem("loginUser", JSON.stringify(data.user));
     }
 
     return data;

@@ -1,7 +1,6 @@
 // src/App.jsx
 import { Outlet } from "react-router-dom";
 import Sidebar from "./components/Sidebar";
-import RightSection from "./components/RightSection";
 
 function App() {
   return (
@@ -10,7 +9,6 @@ function App() {
         <Sidebar />
       </aside>
 
-      {/* Mantengo tu main con ml-96 y overflow igual */}
       <main className="ml-96 flex-1 h-screen overflow-y-auto">
         <Outlet />
       </main>

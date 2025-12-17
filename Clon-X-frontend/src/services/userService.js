@@ -15,7 +15,7 @@ export async function getUsersToFollow(userId) {
     }
 
     const data = await res.json();
-    return data; // data.users tiene el array
+    return data; 
   } catch (error) {
     console.error("❌ getUsersToFollow error:", error);
     return { users: [] };
