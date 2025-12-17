@@ -54,8 +54,8 @@ async function createChat(req, res) {
 async function getChats(req, res) {
   const userId = req.user.id;
 
-  const page = parseInt(req.query.page) || 1; // default page 1
-  const limit = parseInt(req.query.limit) || 10; // default 10 chats per page
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 10;
   const skip = (page - 1) * limit;
 
   try {
@@ -70,9 +70,14 @@ async function getChats(req, res) {
       include: {
         users: {
           include: {
-            user: true,
+            user: {
+              include: {
+                profile: true,
+              },
+            },
           },
         },
+
         messages: {
           orderBy: { createdAt: "desc" },
           take: 1,
@@ -126,7 +131,6 @@ async function getChatMessages(req, res) {
   }
 }
 
-
 async function deleteChat(req, res) {
   const { chatId } = req.params;
   console.log("chatId: ", chatId);
@@ -141,6 +145,7 @@ async function deleteChat(req, res) {
         id: Number(chatId),
       },
     });
+    console.log("Chat deleted successfully")
     return res.status(200).json({ message: "Chat deleted successfully" });
   } catch (err) {
     console.log("Tipo de error:", err.name);
@@ -154,5 +159,5 @@ module.exports = {
   createChat,
   getChats,
   deleteChat,
-  getChatMessages
+  getChatMessages,
 };

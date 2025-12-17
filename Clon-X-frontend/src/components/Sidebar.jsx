@@ -117,8 +117,8 @@ export default function Sidebar() {
       </div>
       <div className="mt-auto flex justify-center">
         <div className="flex flex-row items-center gap-3 w-52">
-          <img className="w-8 h-8 rounded-full bg-gray-400" src="" alt="" />
-          <div className="flex flex-col">
+          <img className="w-8 h-8 rounded-full bg-gray-400" src={loginUser.profile?.profilePhoto} alt="" />
+          <div className="flex flex-col w-6xl">
             <div>{loginUser.name}</div>
             <div>{"@" + loginUser.username}</div>
           </div>

@@ -159,8 +159,8 @@ model UserChat {
   userId Int
   chatId Int
 
-  user User @relation(fields: [userId], references: [id])
-  chat Chat @relation(fields: [chatId], references: [id])
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  chat Chat @relation(fields: [chatId], references: [id], onDelete: Cascade)
 
   @@id([userId, chatId])
 }
@@ -175,7 +175,7 @@ model Message {
   // Relaciones
   sender   User @relation("UserMessages", fields: [senderId], references: [id])
   senderId Int
-  chat     Chat @relation(fields: [chatId], references: [id])
+  chat     Chat @relation(fields: [chatId], references: [id], onDelete: Cascade)
   chatId   Int
 
   images Image[] @relation("MessageImages")

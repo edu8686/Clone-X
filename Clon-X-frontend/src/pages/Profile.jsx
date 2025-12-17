@@ -126,7 +126,7 @@ export default function Profile() {
             <>
               <div className="flex flex-row">
                 <p className="mt-2 text-sm">
-                  Fecha de nacimiento: {formatDate(user?.profile?.birth)}
+                 🎈 Fecha de nacimiento: {formatDate(user?.profile?.birth)}
                 </p>
                 <Calendar className="w-5 h-5 mt-2 ml-5" />
                 <p className="mt-2 ml-1 text-sm">

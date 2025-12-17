@@ -23,6 +23,7 @@ export default function Home() {
 
     async function fetchData() {
       const response = await getPostsFromFollowed(loginUser.id);
+      console.log("response: ", response)
       setPosts(response);
     }
 
@@ -132,7 +133,7 @@ export function PostCard({
           <div className="flex p-4 border-b border-gray-200 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-900 transition cursor-pointer">
             <img
               src={
-                post.author?.profile?.avatar ||
+                post.author?.profile?.profilePhoto ||
                 "https://abs.twimg.com/sticky/default_profile_images/default_profile_400x400.png"
               }
               alt={post.author?.username}

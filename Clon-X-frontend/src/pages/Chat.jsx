@@ -14,6 +14,8 @@ export default function Chat() {
   const [userResults, setUserResults] = useState([]);
   const [messageResults, setMessageResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
+  const [contextMenu, setContextMenu] = useState(null);
+  // { x, y, chat }
 
   const otherUser = selectedChat?.users?.find(
     (u) => u.userId !== loginUser.id
@@ -62,7 +64,16 @@ export default function Chat() {
   }, [query]);
 
   async function handleSelectChat(chat) {
-    socket.emit("joinChat", chat.id); 
+    if (!socket.connected) {
+      socket.connect();
+    }
+
+    if (!chat?.id) {
+      console.warn("Chat inválido:", chat);
+      return;
+    }
+
+    socket.emit("joinChat", chat.id);
     const fullMessages = await getChatMessages(chat.id);
 
     const fullChats = await getChats();
@@ -73,58 +84,55 @@ export default function Chat() {
       messages: fullMessages,
     });
 
-
     setQuery("");
     setUserResults([]);
     setMessageResults([]);
   }
 
-  
-
   useEffect(() => {
     async function load() {
       const data = await getChats();
+      console.log("data: ", data);
       setChats(data.chats);
     }
     load();
   }, []);
 
   useEffect(() => {
-  socket.connect();
+    socket.connect();
 
-  socket.on("newMessage", (message) => {
-    console.log("Nuevo mensaje recibido:", message);
+    socket.on("newMessage", (message) => {
+      console.log("Nuevo mensaje recibido:", message);
 
-    // 1️⃣ Actualizar lista de chats
-    setChats((prevChats) =>
-      prevChats.map((chat) =>
-        chat.id === message.chatId
-          ? {
-              ...chat,
-              messages: [...(chat.messages || []), message],
-            }
-          : chat
-      )
-    );
+      // 1️⃣ Actualizar lista de chats
+      setChats((prevChats) =>
+        prevChats.map((chat) =>
+          chat.id === message.chatId
+            ? {
+                ...chat,
+                messages: [...(chat.messages || []), message],
+              }
+            : chat
+        )
+      );
 
-    // 2️⃣ Actualizar chat abierto
-    setSelectedChat((prev) => {
-      if (!prev) return prev;
-      if (prev.id !== message.chatId) return prev;
+      // 2️⃣ Actualizar chat abierto
+      setSelectedChat((prev) => {
+        if (!prev) return prev;
+        if (prev.id !== message.chatId) return prev;
 
-      return {
-        ...prev,
-        messages: [...(prev.messages || []), message],
-      };
+        return {
+          ...prev,
+          messages: [...(prev.messages || []), message],
+        };
+      });
     });
-  });
 
-  return () => {
-    socket.off("newMessage");
-    socket.disconnect();
-  };
-}, []);
-
+    return () => {
+      socket.off("newMessage");
+      socket.disconnect();
+    };
+  }, []);
 
   function getDate(date) {
     const d = new Date(date);
@@ -137,6 +145,20 @@ export default function Chat() {
     const lastDate = `${day} de ${month} de ${year}`;
     return lastDate;
   }
+
+  useEffect(() => {
+    function closeMenu() {
+      setContextMenu(null);
+    }
+
+    if (contextMenu) {
+      window.addEventListener("click", closeMenu);
+    }
+
+    return () => {
+      window.removeEventListener("click", closeMenu);
+    };
+  }, [contextMenu]);
 
   return (
     <div className="flex h-screen">
@@ -182,6 +204,12 @@ export default function Chat() {
                     });
 
                     const chat = await res.json();
+
+                    setChats((prev) => {
+                      const exists = prev.some((c) => c.id === chat.id);
+                      if (exists) return prev;
+                      return [chat, ...prev];
+                    });
 
                     handleSelectChat(chat);
 
@@ -235,15 +263,33 @@ export default function Chat() {
             <div
               key={chat.id}
               onClick={() => handleSelectChat(chat)}
+              onContextMenu={(e) => {
+                e.preventDefault();
+
+                setContextMenu({
+                  x: e.clientX,
+                  y: e.clientY,
+                  chat,
+                });
+              }}
               className={`p-4 flex gap-3 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-900 
-                ${
-                  selectedChat?.id === chat.id
-                    ? "bg-gray-100 dark:bg-gray-900 border-r-2 border-r-blue-400"
-                    : ""
-                }
-              `}
+    ${
+      selectedChat?.id === chat.id
+        ? "bg-gray-100 dark:bg-gray-900 border-r-2 border-r-blue-400"
+        : ""
+    }
+  `}
             >
-              <div className="w-12 h-12 rounded-full bg-gray-300 dark:bg-gray-800"></div>
+              <div className="shrink-0">
+                <img
+                  className="w-12 h-12 rounded-full bg-gray-300 dark:bg-gray-800"
+                  src={
+                    chat.users.find((u) => u.userId !== loginUser.id)?.user
+                      .profile.profilePhoto || ""
+                  }
+                  alt=""
+                />
+              </div>
 
               <div className="flex flex-col">
                 <div className="flex flex-row">
@@ -346,6 +392,42 @@ export default function Chat() {
           </div>
         )}
       </main>
+      {contextMenu && (
+        <div
+          className="fixed z-50 bg-white dark:bg-gray-900 border rounded-lg shadow-lg"
+          style={{
+            top: contextMenu.y,
+            left: contextMenu.x,
+          }}
+        >
+          <button
+            className="block px-4 py-2 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-gray-800 w-full text-left"
+            onClick={async () => {
+              const chatId = contextMenu.chat.id;
+
+              try {
+                await fetch(`${API_URL}/chat/${chatId}`, {
+                  method: "DELETE",
+                  headers: {
+                    Authorization: `Bearer ${localStorage.getItem("token")}`,
+                  },
+                });
+
+                // 🔥 Actualizar estado
+                setChats((prev) => prev.filter((c) => c.id !== chatId));
+
+                setSelectedChat((prev) => (prev?.id === chatId ? null : prev));
+              } catch (err) {
+                console.error("Error eliminando chat", err);
+              } finally {
+                setContextMenu(null);
+              }
+            }}
+          >
+            Eliminar conversación
+          </button>
+        </div>
+      )}
     </div>
   );
 }

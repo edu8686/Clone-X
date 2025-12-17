@@ -46,7 +46,7 @@ export default function UserCard({ user }) {
       <div className="flex items-start space-x-3">
         <img
           src={
-            user.avatar ||
+            user.profile?.profilePhoto ||
             "https://abs.twimg.com/sticky/default_profile_images/default_profile_400x400.png"
           }
           alt={user.username}

@@ -60,7 +60,7 @@ async function findUsersNotfollowings(req, res) {
         name: true,
         username: true,
         profile: {
-          select: { biography: true },
+          select: { biography: true, profilePhoto : true },
         },
         followers: {
           where: { followerId: userId },
