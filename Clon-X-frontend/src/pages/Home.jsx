@@ -31,7 +31,7 @@ export default function Home() {
   }, [loginUser?.id]);
 
   return (
-    <div className="flex flex-col border-r border-gray-200 dark:border-gray-800 min-h-screen max-w-xl">
+    <div className="flex flex-col border-r border-gray-200 dark:border-gray-800 min-h-screen max-w-2xl">
       <h2 className="text-2xl font-bold p-4 border-b border-gray-200 dark:border-gray-800">
         Inicio
       </h2>
@@ -51,7 +51,7 @@ export default function Home() {
 
 import { useNavigate } from "react-router-dom";
 import CommentModal from "../components/CommentModal";
-import { createComment } from "../services/commentService"; // supuesto endpoint
+import { createComment } from "../services/commentService"; 
 
 export function PostCard({
   post,
@@ -89,7 +89,6 @@ export function PostCard({
         setLiked(false);
       }
     } catch (err) {
-      // opcional: mostrar toast/error
       console.error("Like error:", err);
     } finally {
       setProcessingLike(false);

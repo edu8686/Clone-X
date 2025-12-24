@@ -26,7 +26,15 @@ export default function Sidebar() {
   }
 
   return (
-    <aside className="flex flex-col h-screen w-96 border-r border-gray-200 p-4">
+    <aside
+      className="
+    hidden md:flex
+    md:w-80
+    flex-col
+    h-screen
+    border-r border-gray-200
+  "
+    >
       <div className="flex items-center justify-center md:justify-center mb-8">
         <span className="text-4xl font-bold text-black">X</span>
       </div>
@@ -73,7 +81,7 @@ export default function Sidebar() {
           active={selectedItem === "Perfil"}
           onClick={() => {
             setSelectedItem("Perfil");
-            navigate(`/profile/${loginUser.id}`)
+            navigate(`/profile/${loginUser.id}`);
           }}
         />
         <SidebarItem
@@ -117,7 +125,11 @@ export default function Sidebar() {
       </div>
       <div className="mt-auto flex justify-center">
         <div className="flex flex-row items-center gap-3 w-52">
-          <img className="w-8 h-8 rounded-full bg-gray-400" src={loginUser.profile?.profilePhoto} alt="" />
+          <img
+            className="w-8 h-8 rounded-full bg-gray-400"
+            src={loginUser.profile?.profilePhoto}
+            alt=""
+          />
           <div className="flex flex-col w-6xl">
             <div>{loginUser.name}</div>
             <div>{"@" + loginUser.username}</div>

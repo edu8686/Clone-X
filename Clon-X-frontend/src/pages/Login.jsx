@@ -41,11 +41,8 @@ export default function Login() {
 
     setLoading(true);
     try {
-      // Aquí iría la llamada real al backend, p. ej.:
-      // const res = await fetch("/api/login", { method: "POST", body: JSON.stringify(formData) })
-      // if (!res.ok) throw new Error("Invalid credentials")
       handleLogin()
-      navigate("/"); // redirige al home o dashboard
+      navigate("/"); 
     } catch (err) {
       console.log("Error: ", err)
       setError("Invalid credentials. Try again.");

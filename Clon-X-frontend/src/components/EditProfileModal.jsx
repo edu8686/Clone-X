@@ -31,6 +31,7 @@ export default function EditProfileModal({ user, setUser, edit, onClose }) {
       });
 
       setBannerPreview(user.profile?.banner ?? "");
+      setProfilePhotoPreview(user.profile?.profilePhoto ?? "");
     }
   }, [user]);
 
@@ -57,8 +58,7 @@ export default function EditProfileModal({ user, setUser, edit, onClose }) {
 
     const previewUrl = URL.createObjectURL(file);
     setBannerPreview(previewUrl);
-
-    // guardamos el archivo para enviar luego
+    
     handleChange("banner", file);
   }
 

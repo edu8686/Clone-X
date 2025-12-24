@@ -19,9 +19,7 @@ opts.secretOrKey = process.env.JWT_SECRET;
 
 // 2. Crear el jwt asociado a un id
 function createJWT(id) {
-  return (token = jwt.sign({ id: id }, process.env.JWT_SECRET, {
-    expiresIn: "3h",
-  }));
+  return (token = jwt.sign({ id: id }, process.env.JWT_SECRET));
 }
 
 passport.use(

@@ -9,7 +9,7 @@ function App() {
         <Sidebar />
       </aside>
 
-      <main className="ml-96 flex-1 h-screen overflow-y-auto">
+      <main className="ml-80 flex-1 h-screen overflow-y-auto">
         <Outlet />
       </main>
 

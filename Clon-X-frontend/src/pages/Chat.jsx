@@ -15,7 +15,6 @@ export default function Chat() {
   const [messageResults, setMessageResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
   const [contextMenu, setContextMenu] = useState(null);
-  // { x, y, chat }
 
   const otherUser = selectedChat?.users?.find(
     (u) => u.userId !== loginUser.id
@@ -104,7 +103,6 @@ export default function Chat() {
     socket.on("newMessage", (message) => {
       console.log("Nuevo mensaje recibido:", message);
 
-      // 1️⃣ Actualizar lista de chats
       setChats((prevChats) =>
         prevChats.map((chat) =>
           chat.id === message.chatId
@@ -116,7 +114,6 @@ export default function Chat() {
         )
       );
 
-      // 2️⃣ Actualizar chat abierto
       setSelectedChat((prev) => {
         if (!prev) return prev;
         if (prev.id !== message.chatId) return prev;
@@ -161,9 +158,17 @@ export default function Chat() {
   }, [contextMenu]);
 
   return (
-    <div className="flex h-screen">
+    <div className="flex h-screen w-full overflow-hidden">
       {/* LEFT COLUMN — Chats list */}
-      <aside className="w-[450px] border-r border-gray-200 dark:border-gray-800 bg-white dark:bg-black shrink-0">
+      <aside
+        className={`
+    w-full md:w-[450px]
+    border-r border-gray-200 dark:border-gray-800
+    bg-white dark:bg-black
+    shrink-0
+    ${selectedChat ? "hidden md:block" : "block"}
+  `}
+      >
         <div className="p-4 ">
           <h2 className="text-xl font-bold">Mensajes</h2>
         </div>
@@ -326,14 +331,30 @@ export default function Chat() {
       </aside>
 
       {/* RIGHT COLUMN — Chat messages */}
-      <main className="flex-1 flex flex-col bg-white dark:bg-black">
+      <main
+        className={`
+    flex-1 flex flex-col
+    bg-white dark:bg-black
+    ${!selectedChat ? "hidden md:flex" : "flex"}
+  `}
+      >
         {/* Header */}
         {selectedChat ? (
           <div className="border-b border-gray-200 dark:border-gray-800 p-4 flex items-center gap-3">
+            <button
+              className="md:hidden text-blue-500"
+              onClick={() => setSelectedChat(null)}
+            >
+              ←
+            </button>
+
             <div className="w-10 h-10 rounded-full bg-gray-300 dark:bg-gray-800"></div>
+
             <div className="flex flex-col">
               <span>{otherUser?.name}</span>
-              <span>@{otherUser?.username}</span>
+              <span className="text-sm text-gray-500">
+                @{otherUser?.username}
+              </span>
             </div>
           </div>
         ) : (
@@ -413,7 +434,6 @@ export default function Chat() {
                   },
                 });
 
-                // 🔥 Actualizar estado
                 setChats((prev) => prev.filter((c) => c.id !== chatId));
 
                 setSelectedChat((prev) => (prev?.id === chatId ? null : prev));

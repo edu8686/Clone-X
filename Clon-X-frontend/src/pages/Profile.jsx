@@ -50,7 +50,7 @@ export default function Profile() {
         setFollowers(followers);
         setFollowings(followings);
         setPostsFromUser(posts);
-        setUser(dataProfile); // o data.user, depende cómo respondas
+        setUser(dataProfile); 
       } catch (err) {
         console.log("Error:", err);
       }
@@ -60,7 +60,7 @@ export default function Profile() {
   }, [userId]);
 
   return (
-    <div className="w-full max-w-2xl mx-auto border border-gray-200 ">
+    <div className="w-full max-w-2xl mx-auto ">
       {/* Banner */}
       <div className="w-full h-40 bg-gray-300 relative">
         {user.profile?.banner && (
