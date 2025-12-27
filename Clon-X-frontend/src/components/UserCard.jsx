@@ -4,7 +4,7 @@ import {
   startFollow,
   stopFollow,
 } from "../services/userService";
-import { UserContext } from "../context/userContext";
+import { UserContext } from "../context/UserContext";
 
 export default function UserCard({ user }) {
   const { loginUser, handleUsersToFollow } = useContext(UserContext);

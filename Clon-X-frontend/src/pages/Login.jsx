@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { login } from "../services/loginService";
 import { useContext } from "react";
-import { UserContext } from "../context/userContext";
+import { UserContext } from "../context/UserContext";
 
 export default function Login() {
   const navigate = useNavigate();

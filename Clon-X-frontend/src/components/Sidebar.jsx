@@ -10,7 +10,7 @@ import {
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useContext } from "react";
-import { UserContext } from "../context/userContext";
+import { UserContext } from "../context/UserContext";
 import { createPost } from "../services/postService";
 import { useState } from "react";
 import PostModal from "./PostModal";

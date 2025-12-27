@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { getChats, getChatMessages } from "../services/chatService";
 import { useContext } from "react";
-import { UserContext } from "../context/userContext";
+import { UserContext } from "../context/UserContext";
 import { socket } from "../socket";
 import { API_URL } from "../config";
 

@@ -1,5 +1,5 @@
 import { PostCard } from "./Home";
-import { UserContext } from "../context/userContext";
+import { UserContext } from "../context/UserContext";
 import { useContext } from "react";
 import { useLocation } from "react-router-dom";
 import  Comment  from "../components/Comment"

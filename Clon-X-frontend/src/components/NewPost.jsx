@@ -1,5 +1,5 @@
 import { useState, useContext } from "react";
-import { UserContext } from "../context/userContext";
+import { UserContext } from "../context/UserContext";
 import { Image, Laugh, Smile } from "lucide-react";
 import { PostContext } from "../context/PostContext";
 
