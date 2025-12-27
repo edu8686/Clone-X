@@ -1,6 +1,6 @@
 import { UserProvider } from "./UserContext";
 import { PostProvider } from "./PostContext";
-import { ChatProvider } from "./chatContext";
+import { ChatProvider } from "./ChatContext";
 import { createContext } from "react";
 
 const AppContext = createContext();
