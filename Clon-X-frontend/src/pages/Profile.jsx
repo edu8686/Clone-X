@@ -2,7 +2,7 @@ import { useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { API_URL } from "../config";
 import EditProfileModal from "../components/EditProfileModal";
-import { UserContext } from "../context/userContext";
+import { UserContext } from "../context/UserContext";
 import { Calendar } from "lucide-react";
 import { PostCard } from "./Home";
 import { getPostsByUserId, getPostsLikedByUserId } from "../services/postService";
