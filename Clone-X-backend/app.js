@@ -22,7 +22,11 @@ const server = http.createServer(app);
 // 2.1 Crear instancia de socket.io sobre server
 const io = new Server(server, {
   cors: {
-    origin: ["http://localhost:5173", "http://localhost:5174", "https://clone-x-1-ei6b.onrender.com"],
+    origin: [
+      "http://localhost:5173",
+      "http://localhost:5174",
+      "https://clone-x-1-ei6b.onrender.com"
+    ],
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
     credentials: true,
   },
@@ -30,6 +34,7 @@ const io = new Server(server, {
 
 // 3. Importar cors para habilitar comunicación con el front
 const cors = require("cors");
+
 
 // 4. Habilitar la comunicación con origenes externos
 
