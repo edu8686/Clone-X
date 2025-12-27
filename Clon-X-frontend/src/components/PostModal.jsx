@@ -1,6 +1,6 @@
 import { useContext, useState } from "react";
 import { X } from "lucide-react";
-import { UserContext } from "../context/userContext";
+import { UserContext } from "../context/UserContext";
 
 export default function PostModal({ isOpen, onClose, onSubmitPost, user, children }) {
   const [postText, setPostText] = useState("");
