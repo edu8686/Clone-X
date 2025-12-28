@@ -31,12 +31,12 @@ if (userCount > 1) {
   for (let i = 0; i < USERS_COUNT; i++) {
     const user = await prisma.user.create({
       data: {
+        name: faker.person.fullName(),
         username: faker.internet.username(),
         email: faker.internet.email(),
         password: faker.internet.password(),
         profile: {
           create: {
-            name: faker.person.firstName(),
             lastName: faker.person.lastName(),
             birth: faker.date.birthdate({ min: 1950, max: 2005, mode: "year" }),
             biography: faker.lorem.sentences({ min: 1, max: 3 }),
