@@ -66,7 +66,7 @@ if (userCount > 1) {
         data: {
           text: faker.lorem.paragraph({ min: 1, max: 4 }),
           userId: user.id,
-          likes: faker.number.int({ min: 0, max: 150 }),
+          numLikes: faker.number.int({ min: 0, max: 150 }),
         },
       });
 
