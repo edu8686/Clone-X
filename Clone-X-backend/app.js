@@ -40,11 +40,12 @@ const cors = require("cors");
 
 app.use(
   cors({
-    origin: ["http://localhost:5173", "http://localhost:5174"],
+    origin: ["http://localhost:5173", "http://localhost:5174", "https://clone-x-1-ei6b.onrender.com"],
     methods: ["GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS"],
     creedentials: true,
   })
 );
+
 
 // 5. Import dotenv para manejar los entornos de desarrollo y producción
 
