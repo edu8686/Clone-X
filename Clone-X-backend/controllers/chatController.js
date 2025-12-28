@@ -3,15 +3,29 @@ const { trace } = require("../routes/userRoutes");
 
 async function createChat(req, res) {
   try {
-    const myId = req.user.id; // viene del token JWT
+    const myId = req.user.id;
     const { otherUserId } = req.body;
 
-    // 1. Validación básica
     if (!otherUserId) {
       return res.status(400).json({ error: "otherUserId is required" });
     }
 
-    // 2. Buscar si ya existe un chat 1 a 1 entre ambos
+    const chatInclude = {
+      users: {
+        include: {
+          user: {
+            include: {
+              profile: true,
+            },
+          },
+        },
+      },
+      messages: {
+        orderBy: { createdAt: "asc" },
+      },
+    };
+
+    // 1️⃣ Buscar chat existente
     const existingChat = await prisma.chat.findFirst({
       where: {
         isGroup: false,
@@ -20,14 +34,14 @@ async function createChat(req, res) {
           { users: { some: { userId: otherUserId } } },
         ],
       },
-      include: { users: true },
+      include: chatInclude,
     });
 
     if (existingChat) {
-      return res.json({ chat: existingChat, message: "Chat already exists" });
+      return res.json({ chat: existingChat });
     }
 
-    // 3. Crear nuevo chat y los UserChat correspondientes
+    // 2️⃣ Crear chat nuevo
     const chat = await prisma.chat.create({
       data: {
         isGroup: false,
@@ -35,13 +49,7 @@ async function createChat(req, res) {
           create: [{ userId: myId }, { userId: otherUserId }],
         },
       },
-      include: {
-        users: {
-          include: {
-            user: true, // opcional → incluye data del usuario real
-          },
-        },
-      },
+      include: chatInclude,
     });
 
     return res.json({ chat });
@@ -50,6 +58,7 @@ async function createChat(req, res) {
     return res.status(500).json({ error: "Error creating chat" });
   }
 }
+
 
 async function getChats(req, res) {
   const userId = req.user.id;
