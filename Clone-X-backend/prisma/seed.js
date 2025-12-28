@@ -6,7 +6,7 @@ const prisma = new PrismaClient();
 async function main() {
   const userCount = await prisma.user.count();
 
-if (userCount > 0) {
+if (userCount > 1) {
   console.log("⚠️ DB ya inicializada, seed cancelado.");
   return;
 }
