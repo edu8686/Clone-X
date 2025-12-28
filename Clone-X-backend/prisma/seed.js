@@ -4,19 +4,31 @@ const { faker } = require("@faker-js/faker");
 const prisma = new PrismaClient();
 
 async function main() {
+  const userCount = await prisma.user.count();
+
+if (userCount > 0) {
+  console.log("⚠️ DB ya inicializada, seed cancelado.");
+  return;
+}
   console.log("🌱 Iniciando seed de la base de datos...");
 
-  // Limpiar base de datos antes de poblarla
+  // 🔥 Limpiar base de datos (orden correcto por relaciones)
   await prisma.follow.deleteMany();
   await prisma.comment.deleteMany();
   await prisma.post.deleteMany();
   await prisma.profile.deleteMany();
   await prisma.user.deleteMany();
 
+  console.log("🧹 Base de datos limpiada.");
+
   const users = [];
 
-  // 1️⃣ Crear usuarios y perfiles
-  for (let i = 0; i < 10; i++) {
+  // ==========================
+  // 1️⃣ Usuarios + Perfiles
+  // ==========================
+  const USERS_COUNT = 15;
+
+  for (let i = 0; i < USERS_COUNT; i++) {
     const user = await prisma.user.create({
       data: {
         name: faker.person.fullName(),
@@ -27,53 +39,81 @@ async function main() {
           create: {
             name: faker.person.firstName(),
             lastName: faker.person.lastName(),
-            birth: faker.date.birthdate(),
-            biography: faker.lorem.sentence(),
+            birth: faker.date.birthdate({ min: 1950, max: 2005, mode: "year" }),
+            biography: faker.lorem.sentences({ min: 1, max: 3 }),
             location: faker.location.city(),
-            banner: faker.image.urlPicsumPhotos(),
+            banner: faker.image.urlPicsumPhotos({ width: 1200, height: 400 }),
             profilePhoto: faker.image.avatar(),
           },
         },
       },
     });
+
     users.push(user);
   }
 
   console.log(`✅ ${users.length} usuarios creados.`);
 
-  // 2️⃣ Crear posts por usuario
+  // ==========================
+  // 2️⃣ Posts
+  // ==========================
+  const posts = [];
+
   for (const user of users) {
-    for (let j = 0; j < 3; j++) {
-      await prisma.post.create({
+    const POSTS_PER_USER = faker.number.int({ min: 2, max: 6 });
+
+    for (let i = 0; i < POSTS_PER_USER; i++) {
+      const post = await prisma.post.create({
         data: {
-          text: faker.lorem.paragraph(),
+          text: faker.lorem.paragraph({ min: 1, max: 4 }),
           userId: user.id,
-          likes: faker.number.int({ min: 0, max: 50 }),
+          likes: faker.number.int({ min: 0, max: 150 }),
+        },
+      });
+
+      posts.push(post);
+    }
+  }
+
+  console.log(`✅ ${posts.length} posts creados.`);
+
+  // ==========================
+  // 3️⃣ Comentarios
+  // ==========================
+  for (const post of posts) {
+    const COMMENTS_PER_POST = faker.number.int({ min: 1, max: 5 });
+
+    for (let i = 0; i < COMMENTS_PER_POST; i++) {
+      const randomUser = faker.helpers.arrayElement(users);
+
+      await prisma.comment.create({
+        data: {
+          text: faker.lorem.sentence(),
+          postId: post.id,
+          userId: randomUser.id,
         },
       });
     }
   }
-  console.log("✅ Posts creados para cada usuario.");
 
-  // 3️⃣ Crear comentarios aleatorios
-  const allPosts = await prisma.post.findMany();
-  for (const post of allPosts) {
-    const randomUser = faker.helpers.arrayElement(users);
-    await prisma.comment.create({
-      data: {
-        text: faker.lorem.sentence(),
-        postId: post.id,
-        userId: randomUser.id,
-      },
-    });
-  }
   console.log("✅ Comentarios creados.");
 
-  // 4️⃣ Relaciones de follow entre usuarios
+  // ==========================
+  // 4️⃣ Follows (red social realista)
+  // ==========================
+  const followSet = new Set();
+
   for (const follower of users) {
     const others = users.filter((u) => u.id !== follower.id);
-    const follows = faker.helpers.arrayElements(others, 3); // sigue a 3 personas aleatorias
-    for (const followed of follows) {
+    const FOLLOW_COUNT = faker.number.int({ min: 2, max: 5 });
+    const followedUsers = faker.helpers.arrayElements(others, FOLLOW_COUNT);
+
+    for (const followed of followedUsers) {
+      const key = `${follower.id}-${followed.id}`;
+      if (followSet.has(key)) continue;
+
+      followSet.add(key);
+
       await prisma.follow.create({
         data: {
           followerId: follower.id,
@@ -82,12 +122,14 @@ async function main() {
       });
     }
   }
+
   console.log("✅ Relaciones de follow creadas.");
 
   console.log("🌿 Seed completado con éxito!");
 }
 
 main()
+
   .catch((e) => {
     console.error("❌ Error durante el seed:", e);
     process.exit(1);
