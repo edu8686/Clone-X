@@ -208,7 +208,9 @@ export default function Chat() {
                       body: JSON.stringify({ otherUserId: user.id }),
                     });
 
-                    const chat = await res.json();
+                    const {chat} = await res.json();
+                    console.log("CHAT NUEVO:", chat);
+
 
                     setChats((prev) => {
                       const exists = prev.some((c) => c.id === chat.id);
@@ -301,14 +303,14 @@ export default function Chat() {
               <div className="flex flex-col">
                 <div className="flex flex-row">
                   <span className="font-semibold truncate">
-                    {chat.users.find((u) => u.userId !== loginUser.id)?.user
+                    {chat.users?.find((u) => u.userId !== loginUser.id)?.user
                       .name || "User"}
                   </span>
 
                   <span className="font-light ml-2 text-base">
                     @
                     {
-                      chat.users.find((u) => u.userId !== loginUser.id)?.user
+                      chat.users?.find((u) => u.userId !== loginUser.id)?.user
                         .username
                     }
                   </span>
