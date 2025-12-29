@@ -351,8 +351,8 @@ export default function Chat() {
             >
               ←
             </button>
-
-            <div className="w-10 h-10 rounded-full bg-gray-300 dark:bg-gray-800"></div>
+{console.log(otherUser)}
+            <img  className="w-10 h-10 rounded-full bg-gray-300 dark:bg-gray-800" src={otherUser?.profile.profilePhoto} alt=""/>
 
             <div className="flex flex-col">
               <span>{otherUser?.name}</span>
