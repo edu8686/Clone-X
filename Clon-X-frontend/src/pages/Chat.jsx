@@ -286,25 +286,29 @@ export default function Chat() {
   `}
             >
               <div className="shrink-0">
+                {console.log(chat)
+}
                 <img
+                  className="w-12 h-12 rounded-full bg-gray-300 dark:bg-gray-800"
                   src={
-                    chat.users?.find((u) => u.userId !== loginUser.id)?.user
-                      ?.profile?.profilePhoto || ""
+                    chat.users.find((u) => u.userId !== loginUser.id)?.user
+                      .profile.profilePhoto || ""
                   }
+                  alt=""
                 />
               </div>
 
               <div className="flex flex-col">
                 <div className="flex flex-row">
                   <span className="font-semibold truncate">
-                    {chat.users?.find((u) => u.userId !== loginUser.id)?.user
+                    {chat.users.find((u) => u.userId !== loginUser.id)?.user
                       .name || "User"}
                   </span>
 
                   <span className="font-light ml-2 text-base">
                     @
                     {
-                      chat.users?.find((u) => u.userId !== loginUser.id)?.user
+                      chat.users.find((u) => u.userId !== loginUser.id)?.user
                         .username
                     }
                   </span>

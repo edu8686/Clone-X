@@ -51,6 +51,8 @@ app.use(
 
 const dotenv = require("dotenv");
 
+console.log("DATABASE_URL:", process.env.DATABASE_URL);
+
 const cloudinary = require("cloudinary").v2;
 
 // 6. Cargar .env o .env.production automaticamente

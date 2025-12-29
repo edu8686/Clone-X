@@ -4,6 +4,7 @@ const prisma = require("../prisma");
 async function login(req, res) {
   const userId = req.user.id;
 
+
   try {
     const user = await prisma.user.findUnique({
       where: { id: userId },
