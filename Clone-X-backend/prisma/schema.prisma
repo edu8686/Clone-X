@@ -53,8 +53,7 @@ model Profile {
   biography    String?
   location     String?
 
-  // Relación 1:1 con User
-  user   User @relation(fields: [userId], references: [id])
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId Int  @unique
 }
 
@@ -68,7 +67,7 @@ model Post {
   saved Int @default(0)
 
   // Relaciones
-  author   User        @relation(fields: [userId], references: [id])
+  author   User        @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId   Int
   comments Comment[]
   savedBy  SavedPost[]
@@ -83,7 +82,7 @@ model Comment {
   likes     Int      @default(0)
 
   // Relaciones
-  author User @relation(fields: [userId], references: [id])
+  author User @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId Int
 
   post   Post @relation(fields: [postId], references: [id])
@@ -96,7 +95,7 @@ model List {
   description String?
 
   // Relaciones
-  user   User @relation(fields: [userId], references: [id])
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId Int
 
   posts ListPost[]
@@ -106,8 +105,8 @@ model ListPost {
   listId Int
   postId Int
 
-  list List @relation(fields: [listId], references: [id])
-  post Post @relation(fields: [postId], references: [id])
+  list List @relation(fields: [listId], references: [id], onDelete: Cascade)
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
 
   @@id([listId, postId])
 }
@@ -116,8 +115,8 @@ model SavedPost {
   userId Int
   postId Int
 
-  user User @relation(fields: [userId], references: [id])
-  post Post @relation(fields: [postId], references: [id])
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
 
   @@id([userId, postId])
 }
@@ -127,8 +126,8 @@ model Like {
   userId Int
   postId Int
 
-  user User @relation(fields: [userId], references: [id])
-  post Post @relation(fields: [postId], references: [id])
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
 
   @@unique([userId, postId])
 }
@@ -137,8 +136,8 @@ model Follow {
   followerId Int
   followedId Int
 
-  follower User @relation("Following", fields: [followerId], references: [id])
-  followed User @relation("Followers", fields: [followedId], references: [id])
+  follower User @relation("Following", fields: [followerId], references: [id], onDelete: Cascade)
+  followed User @relation("Followers", fields: [followedId], references: [id], onDelete: Cascade)
 
   @@id([followerId, followedId])
 }
@@ -173,7 +172,7 @@ model Message {
   type      String?
 
   // Relaciones
-  sender   User @relation("UserMessages", fields: [senderId], references: [id])
+  sender   User @relation("UserMessages", fields: [senderId], references: [id], onDelete: Cascade)
   senderId Int
   chat     Chat @relation(fields: [chatId], references: [id], onDelete: Cascade)
   chatId   Int
@@ -195,7 +194,7 @@ model Image {
   entityId   Int?
 
   // Opcional: relación directa con Message si se usa así
-  message   Message? @relation("MessageImages", fields: [messageId], references: [id])
+  message   Message? @relation("MessageImages", fields: [messageId], references: [id], onDelete: Cascade)
   messageId Int?
 
   Post Post[] @relation("PostImages")

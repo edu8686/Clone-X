@@ -54,19 +54,9 @@ export default function Login() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-black text-white px-4">
       <div className="w-full max-w-md space-y-6">
-        {/* Logo */}
-        <div className="flex justify-center">
-          <svg
-            viewBox="0 0 24 24"
-            aria-hidden="true"
-            className="h-10 w-10 fill-white"
-          >
-            <path d="M23.954 4.569c-.885.389-1.83.654-2.825.775 1.014-.611 1.794-1.574 2.163-2.723-.949.564-2.005.974-3.127 1.195-.897-.959-2.178-1.555-3.594-1.555-2.719 0-4.924 2.205-4.924 4.924 0 .39.045.765.127 1.124C7.688 8.094 4.064 6.13 1.64 3.161c-.427.733-.666 1.584-.666 2.491 0 1.722.875 3.244 2.206 4.136-.813-.026-1.578-.249-2.247-.616v.061c0 2.404 1.71 4.405 3.977 4.86-.416.111-.855.171-1.309.171-.319 0-.63-.03-.935-.086.631 1.953 2.445 3.376 4.6 3.417-1.68 1.318-3.809 2.105-6.115 2.105-.398 0-.79-.023-1.175-.069 2.179 1.397 4.768 2.212 7.557 2.212 9.054 0 14.002-7.497 14.002-13.986 0-.213-.005-.425-.014-.636.962-.694 1.8-1.562 2.46-2.549z" />
-          </svg>
-        </div>
 
         {/* Title */}
-        <h2 className="text-3xl font-bold text-center">Sign in to X</h2>
+        <h2 className="text-3xl font-bold text-center">Sign in to Pulse</h2>
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-4 mt-2">

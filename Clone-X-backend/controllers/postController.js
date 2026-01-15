@@ -60,13 +60,21 @@ async function findPostsFromFollowed(req, res) {
       where: {
         userId: { in: followedIds },
       },
-      include: {
+      select: {
+        id: true,
+        text: true,
+        createdAt: true,
+        numLikes: true,
         author: {
           select: {
             id: true,
             name: true,
             username: true,
-            profile: { select: { profilePhoto: true } },
+            profile: {
+              select: {
+                profilePhoto: true,
+              },
+            },
           },
         },
         comments: {
@@ -76,13 +84,31 @@ async function findPostsFromFollowed(req, res) {
             likes: true,
             createdAt: true,
             author: {
-              select: { id: true, name: true, username: true },
+              select: {
+                id: true,
+                name: true,
+                username: true,
+                profile: {
+                  select: { profilePhoto: true },
+                },
+              },
             },
           },
         },
         likes: {
-          include: {
-            user: true, // acá obtenés el usuario que dio like
+          select: {
+            id: true,
+            user: {
+              select: {
+                id: true,
+                username: true,
+                profile: {
+                  select: {
+                    profilePhoto: true,
+                  },
+                },
+              },
+            },
           },
         },
       },
@@ -147,6 +173,13 @@ async function findPostById(req, res) {
       where: {
         id: Number(postId),
       },
+      include: {
+        author: {
+          include: {
+            profile: true,
+          },
+        },
+      },
     });
     if (!post) {
       return res.status(404).json({ message: "Post not found" });
@@ -192,7 +225,6 @@ async function findPostsSearch(req, res) {
   }
 }
 
-
 async function findPostsLikedByUserId(req, res) {
   const { userId } = req.params;
 
@@ -207,17 +239,17 @@ async function findPostsLikedByUserId(req, res) {
       where: {
         userId: Number(userId),
       },
-      include : {
-        post : {
-          include : {
-            author : true
-          }
-        }
-      }
+      include: {
+        post: {
+          include: {
+            author: true,
+          },
+        },
+      },
     });
-    console.log("likes: ", likes)
-    const posts = likes.map(like => like.post);
-    console.log("posts: ", posts)
+    console.log("likes: ", likes);
+    const posts = likes.map((like) => like.post);
+    console.log("posts: ", posts);
 
     res.status(200).json({ message: "Posts found", posts });
   } catch (err) {
@@ -336,5 +368,5 @@ module.exports = {
   incrementPostLikes,
   decrementPostLikes,
   findPostsFromFollowed,
-  findPostsLikedByUserId
+  findPostsLikedByUserId,
 };

@@ -10,12 +10,13 @@ export default function Comment({ comment }) {
   return (
     <div className="flex p-4 border-b border-gray-200 dark:border-gray-800">
       {/* Avatar */}
+      {console.log("Comment: ", comment)}
       <img
         src={
           comment.author?.profile?.profilePhoto ||
           "https://abs.twimg.com/sticky/default_profile_images/default_profile_400x400.png"
         }
-        alt={comment.author.username}
+        alt={comment.author?.username}
         className="w-10 h-10 rounded-full object-cover mr-3"
       />
 

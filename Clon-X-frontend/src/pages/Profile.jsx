@@ -26,7 +26,7 @@ export default function Profile() {
 
     if (isNaN(date)) return "—";
 
-    return new Intl.DateTimeFormat("es-AR", {
+    return new Intl.DateTimeFormat("en-En", {
       day: "numeric",
       month: "long",
       year: "numeric",
@@ -126,11 +126,11 @@ export default function Profile() {
             <>
               <div className="flex flex-row">
                 <p className="mt-2 text-sm">
-                 🎈 Fecha de nacimiento: {formatDate(user?.profile?.birth)}
+                 🎈 Birth: {formatDate(user?.profile?.birth)}
                 </p>
                 <Calendar className="w-5 h-5 mt-2 ml-5" />
                 <p className="mt-2 ml-1 text-sm">
-                  Se unió el {formatDate(user?.profile?.user.createdAt)}
+                  Joined {formatDate(user?.profile?.user.createdAt)}
                 </p>
               </div>
             </>
@@ -179,17 +179,17 @@ export default function Profile() {
                 <PostCard key={post.id} post={post} />
               ))
             ) : (
-              <p className="text-center text-gray-500 mt-6">No hay posts</p>
+              <p className="text-center text-gray-500 mt-6">No posts</p>
             ))}
 
           {tabSelected === "Replies" && (
-            <p className="text-center text-gray-500 mt-6">No hay replies aún</p>
+            <p className="text-center text-gray-500 mt-6">No replies yet</p>
           )}
 
           {tabSelected === "Likes" && (
             postsLiked.length > 0 ? (postsLiked.map((post) => (
                <PostCard key={post.id} post={post} /> 
-            ))) : (<p className="text-center text-gray-500 mt-6">No hay likes aún</p>)
+            ))) : (<p className="text-center text-gray-500 mt-6">No likes yet</p>)
             
           )}
         </div>

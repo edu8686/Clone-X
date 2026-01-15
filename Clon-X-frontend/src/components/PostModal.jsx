@@ -37,12 +37,12 @@ export default function PostModal({ isOpen, onClose, onSubmitPost, user, childre
         <div className="py-6  dark:border-gray-800">
           {children}
         </div>
-
+        {console.log("User: ", user)}
         {/* Zona de comentario */}
         <div className="flex mt-4">
           <img
             src={
-              user.profile?.avatar ||
+              user.profile?.profilePhoto ||
               "https://abs.twimg.com/sticky/default_profile_images/default_profile_400x400.png"
             }
             alt={user.username}

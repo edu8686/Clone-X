@@ -170,7 +170,7 @@ export default function Chat() {
   `}
       >
         <div className="p-4 ">
-          <h2 className="text-xl font-bold">Mensajes</h2>
+          <h2 className="text-xl font-bold">Messages</h2>
         </div>
 
         {/* Search bar */}
@@ -184,13 +184,13 @@ export default function Chat() {
             }}
           />
           {isSearching && (
-            <p className="text-sm text-gray-500 px-4">Buscando...</p>
+            <p className="text-sm text-gray-500 px-4">Searching...</p>
           )}
 
           {/* RESULTADOS DE USUARIOS */}
           {userResults.length > 0 && (
             <div className="px-4 py-2">
-              <p className="text-xs text-gray-400 mb-1">Usuarios</p>
+              <p className="text-xs text-gray-400 mb-1">Users</p>
 
               {userResults.map((user) => (
                 <div
@@ -235,7 +235,7 @@ export default function Chat() {
           {/* RESULTADOS DE MENSAJES */}
           {messageResults.length > 0 && (
             <div className="px-4 py-2">
-              <p className="text-xs text-gray-400 mb-1">Mensajes</p>
+              <p className="text-xs text-gray-400 mb-1">Messages</p>
 
               {messageResults.map((msg) => (
                 <div
@@ -363,7 +363,7 @@ export default function Chat() {
           </div>
         ) : (
           <div className="flex items-center justify-center h-full text-gray-500">
-            Seleccioná una conversación
+            Choose a conversation
           </div>
         )}
 
@@ -394,7 +394,7 @@ export default function Chat() {
           <div className="p-4 border-t border-gray-200 dark:border-gray-800 flex items-center gap-2">
             <input
               className="flex-1 px-4 py-2 rounded-full bg-gray-100 dark:bg-gray-900 outline-none"
-              placeholder="Escribir un mensaje"
+              placeholder="Write a message"
               value={text}
               onChange={(e) => setText(e.target.value)}
             />
@@ -412,7 +412,7 @@ export default function Chat() {
                 setText("");
               }}
             >
-              Enviar
+              Send
             </button>
           </div>
         )}
@@ -448,7 +448,7 @@ export default function Chat() {
               }
             }}
           >
-            Eliminar conversación
+            Delete conversation
           </button>
         </div>
       )}

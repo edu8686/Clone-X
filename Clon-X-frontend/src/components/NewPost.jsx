@@ -30,7 +30,7 @@ export default function NewPost() {
         <div>
           <textarea
             className="w-full bg-transparent text-lg resize-none focus:outline-none text-gray-800 dark:text-gray-200"
-            placeholder="¿Qué está pasando?"
+            placeholder="What's happening?"
             rows={3}
             value={postText}
             onChange={(e) => setPostText(e.target.value)}

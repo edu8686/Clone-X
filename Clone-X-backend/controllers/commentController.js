@@ -46,6 +46,13 @@ async function findCommentById(req, res) {
       where: {
         id: Number(commentId),
       },
+      include: {
+        author: {
+          include: {
+            profile: true,
+          },
+        },
+      },
     });
     if (!comment) {
       return res.status(404).json({ message: "Comment not found" });

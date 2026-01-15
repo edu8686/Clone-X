@@ -33,7 +33,7 @@ export default function Home() {
   return (
     <div className="flex flex-col border-r border-gray-200 dark:border-gray-800 min-h-screen max-w-2xl">
       <h2 className="text-2xl font-bold p-4 border-b border-gray-200 dark:border-gray-800">
-        Inicio
+        Home
       </h2>
       <NewPost />
 
@@ -51,7 +51,7 @@ export default function Home() {
 
 import { useNavigate } from "react-router-dom";
 import CommentModal from "../components/CommentModal";
-import { createComment } from "../services/commentService"; 
+import { createComment } from "../services/commentService";
 
 export function PostCard({
   post,
@@ -59,21 +59,20 @@ export function PostCard({
   disableNavigate = false,
   handleClick,
 }) {
-  console.log("Post: ", post);
 
   const [likes, setLikes] = useState(Number(post.numLikes ?? 0));
   const [comments, setComments] = useState(post.comments);
   const [liked, setLiked] = useState(
-    Array.isArray(post.likedBy)
-      ? post.likedBy.some((l) => l.userId === loginUser.id)
-      : false
-  );
+  Array.isArray(post.likes)
+    ? post.likes.some((l) => l.user.id === loginUser.id)
+    : false
+);
+
   const [isOpenedModal, setIsOpenedModal] = useState(false);
   const navigate = useNavigate();
 
   const [processingLike, setProcessingLike] = useState(false);
 
-  const isLiked = post.likes?.some((u) => u.userId === loginUser.id);
 
   async function toggleLike() {
     if (processingLike) return;
@@ -106,9 +105,20 @@ export function PostCard({
     });
   }
 
-  async function handleSubmitComment(commentText) {
-    await createComment(post.id, loginUser.id, commentText);
-  }
+async function handleSubmitComment(commentText) {
+  const response = await createComment(
+    post.id,
+    loginUser.id,
+    commentText
+  );
+
+    const normalizedComment = {
+    ...response.newComment,
+    author: loginUser, // 🔑 clave
+  };
+
+  setComments((prev) => [...prev, normalizedComment]);
+}
 
   const formattedDate = new Date(post.createdAt).toLocaleDateString("es-AR", {
     day: "numeric",
@@ -183,7 +193,7 @@ export function PostCard({
                 >
                   <Heart
                     className={`w-5 h-5 ml-28 ${
-                      isLiked ? "text-red-500 fill-red-500" : ""
+                      liked ? "text-red-500 fill-red-500" : ""
                     }`}
                   />
 
@@ -205,7 +215,7 @@ export function PostCard({
         <div className="flex space-x-3">
           <img
             src={
-              post.author.profile?.avatar ||
+              post.author.profile?.profilePhoto ||
               "https://abs.twimg.com/sticky/default_profile_images/default_profile_400x400.png"
             }
             alt={post.author.username}

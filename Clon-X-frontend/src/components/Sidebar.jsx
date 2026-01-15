@@ -36,21 +36,21 @@ export default function Sidebar() {
   "
     >
       <div className="flex items-center justify-center md:justify-center mb-8">
-        <span className="text-4xl font-bold text-black">X</span>
+        <span className="text-4xl font-bold text-black">Pulse</span>
       </div>
       <nav className="flex flex-col justify-center gap-4 self-center">
         <SidebarItem
           icon={<Home />}
-          label="Inicio"
-          active={selectedItem === "Inicio"}
+          label="Home"
+          active={selectedItem === "Home"}
           onClick={() => {
             navigate("/");
-            setSelectedItem("Inicio");
+            setSelectedItem("Home");
           }}
         />
         <SidebarItem
           icon={<Search />}
-          label="Explorar"
+          label="Explore"
           active={selectedItem === "Explore"}
           onClick={() => {
             navigate("/explore");
@@ -59,37 +59,37 @@ export default function Sidebar() {
         />
         <SidebarItem
           icon={<Bell />}
-          label="Notificaciones"
-          active={selectedItem === "Notificaciones"}
+          label="Notifications"
+          active={selectedItem === "Notifications"}
           onClick={() => {
-            setSelectedItem("Notificaciones");
+            setSelectedItem("Notifications");
             alert("Not functional section");
           }}
         />
         <SidebarItem
           icon={<Mail />}
-          label="Mensajes"
-          active={selectedItem === "Mensajes"}
+          label="Messages"
+          active={selectedItem === "Messages"}
           onClick={() => {
             navigate("/chat");
-            setSelectedItem("Mensajes");
+            setSelectedItem("Messages");
           }}
         />
         <SidebarItem
           icon={<User />}
-          label="Perfil"
-          active={selectedItem === "Perfil"}
+          label="Profile"
+          active={selectedItem === "Profile"}
           onClick={() => {
-            setSelectedItem("Perfil");
+            setSelectedItem("Profile");
             navigate(`/profile/${loginUser.id}`);
           }}
         />
         <SidebarItem
           icon={<MoreHorizontal />}
-          label="Más"
-          active={selectedItem === "Más"}
+          label="More"
+          active={selectedItem === "More"}
           onClick={() => {
-            setSelectedItem("Más");
+            setSelectedItem("More");
             alert("Not functional section");
           }}
         />

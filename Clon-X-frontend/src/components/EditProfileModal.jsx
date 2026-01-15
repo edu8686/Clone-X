@@ -11,7 +11,7 @@ export default function EditProfileModal({ user, setUser, edit, onClose }) {
     biography: "",
     birth: "",
     location: "",
-    banner: null, 
+    banner: null,
   });
 
   const [bannerPreview, setBannerPreview] = useState("");
@@ -24,7 +24,7 @@ export default function EditProfileModal({ user, setUser, edit, onClose }) {
           user.profile?.lastName ?? ""
         }`,
         biography: user.profile?.biography ?? "",
-        birth: user.profile?.birth ?? "",
+        birth: user.profile?.birth ? user.profile.birth.split("T")[0] : "",
         location: user.profile?.location ?? "",
         banner: user.profile?.banner ?? null,
         profilePhoto: user.profile?.profilePhoto ?? null,
@@ -58,7 +58,7 @@ export default function EditProfileModal({ user, setUser, edit, onClose }) {
 
     const previewUrl = URL.createObjectURL(file);
     setBannerPreview(previewUrl);
-    
+
     handleChange("banner", file);
   }
 
@@ -67,40 +67,43 @@ export default function EditProfileModal({ user, setUser, edit, onClose }) {
     handleChange("banner", null);
   }
 
-async function handleSave() {
-  console.log("handleSave ejecutado");
-  console.log("STATE:", formData);
+  async function handleSave() {
+    console.log("handleSave ejecutado");
+    console.log("STATE:", formData);
 
-  const fd = new FormData();
+    const fd = new FormData();
 
-  if (formData.name.trim()) fd.append("name", formData.name);
-  if (formData.profilePhoto instanceof File) fd.append("profilePhoto", formData.profilePhoto);
-  if (formData.biography.trim()) fd.append("biography", formData.biography);
-  if (formData.birth.trim()) fd.append("birth", formData.birth);
-  if (formData.location.trim()) fd.append("location", formData.location);
-  if (formData.banner instanceof File) fd.append("banner", formData.banner);
+    if (formData.name.trim()) fd.append("name", formData.name);
+    if (formData.profilePhoto instanceof File)
+      fd.append("profilePhoto", formData.profilePhoto);
+    if (formData.biography.trim()) fd.append("biography", formData.biography);
+    if (formData.birth.trim()) fd.append("birth", formData.birth);
+    if (formData.location.trim()) fd.append("location", formData.location);
+    if (formData.banner instanceof File) fd.append("banner", formData.banner);
 
-  console.log("FormData keys:", [...fd.keys()]);
+    console.log("FormData keys:", [...fd.keys()]);
 
-  if ([...fd.keys()].length === 0) {
-    onClose();
-    return;
+    if ([...fd.keys()].length === 0) {
+      onClose();
+      return;
+    }
+
+    try {
+      const updatedProfile = await editProfile(fd);
+
+      setUser((prev) => ({
+        ...prev,
+        profile: {
+          ...prev.profile,
+          ...updatedProfile,
+        },
+      }));
+
+      onClose();
+    } catch (err) {
+      console.error("Error updating profile:", err);
+    }
   }
-
-  try {
-    const updatedProfile = await editProfile(fd);
-
-    setUser((prev) => ({
-      ...prev,
-      profile: updatedProfile,
-    }));
-
-    onClose();
-  } catch (err) {
-    console.error("Error updating profile:", err);
-  }
-}
-
 
   if (!edit) return null;
 
@@ -164,7 +167,7 @@ async function handleSave() {
             </div>
           </div>
 
-          {/* PROFILE PHOTO (SUPERPUESTA) */}
+          {/* PROFILE PHOTO */}
           <div className="absolute -bottom-10 left-6">
             <div className="relative w-24 h-24 rounded-full overflow-hidden border-4 border-white bg-gray-300">
               {profilePhotoPreview ? (
@@ -215,7 +218,7 @@ async function handleSave() {
 
           <label className="font-medium mb-2">Birth</label>
           <input
-            type="text"
+            type="date"
             value={formData.birth}
             onChange={(e) => handleChange("birth", e.target.value)}
             className="w-full border  border-gray-300 px-3 py-2 rounded mb-3"
