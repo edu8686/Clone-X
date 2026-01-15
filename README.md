@@ -66,8 +66,9 @@ clone-x/
 │   ├── prisma/
 │   ├── routes/
 │   ├── controllers/
-│   ├── middlewares/
 │   ├── app.js
+|   |-– utils/
+|   |–– config/
 │   └── package.json
 │
 └── README.md
